@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@import '@sportgather/ui/theme.css';
+
+/* Kelas Tailwind di paket UI ikut dipindai. */
+@source '../../../packages/ui/src';
+
+html {
+  background: var(--color-canvas);
+  color: var(--color-fg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+}

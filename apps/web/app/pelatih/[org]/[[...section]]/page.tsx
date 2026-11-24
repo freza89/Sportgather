@@ -1,0 +1,29 @@
+import { formatHariTanggalPanjang } from '@sportgather/shared';
+import { notFound } from 'next/navigation';
+import { Placeholder } from '@/components/placeholder';
+import { MobileShell } from '@/components/shell/mobile-shell';
+import { DEMO } from '@/lib/demo';
+import { PELATIH_NAV } from '@/lib/navigation';
+
+export default async function PelatihSection({
+  params,
+}: {
+  params: Promise<{ org: string; section?: string[] }>;
+}) {
+  const { org, section = [] } = await params;
+  const entry = PELATIH_NAV.find((e) => e.segment === (section[0] ?? ''));
+  if (!entry) notFound();
+  const home = entry.segment === '';
+
+  return (
+    <MobileShell
+      base={`/pelatih/${org}`}
+      role="pelatih"
+      title={home ? `Halo, ${DEMO.coachName}` : entry.label}
+      subtitle={home ? `${formatHariTanggalPanjang(new Date())} · ${DEMO.clubName}` : DEMO.clubName}
+      userName={DEMO.coachName}
+    >
+      <Placeholder entry={entry} />
+    </MobileShell>
+  );
+}
