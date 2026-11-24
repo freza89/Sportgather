@@ -1,0 +1,100 @@
+/*
+ * Design tokens SportGather — sumber: Figma "00 · Design System" (file vwWLfX9ncQFJK9g94jlAdl).
+ * Pemetaan nama Figma → token Tailwind ditulis di komentar setiap baris.
+ * Dipakai lewat `@import '@sportgather/ui/theme.css';` di CSS aplikasi (Tailwind v4).
+ */
+@theme {
+  --font-sans: var(--font-plus-jakarta), 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand */
+  --color-brand: #f26b1d; /* brand/primary */
+  --color-brand-dark: #c2540f; /* brand/primary-dark */
+  --color-brand-tint: #fff1e8; /* brand/tint */
+
+  /* Navy (sidebar, app bar, tombol gelap) */
+  --color-navy-900: #0f1b3d; /* navy/900 */
+  --color-navy-700: #1f2e57; /* navy/700 */
+  --color-navy-muted: #a9b3ce; /* navy/muted */
+
+  /* Latar & garis */
+  --color-canvas: #f5f6fa; /* bg/canvas */
+  --color-surface: #ffffff; /* bg/surface */
+  --color-line: #e3e6ee; /* border/default */
+
+  /* Teks */
+  --color-fg: #0f1b3d; /* text/primary */
+  --color-fg-secondary: #5b6480; /* text/secondary */
+  --color-fg-muted: #8a92a8; /* text/muted */
+  --color-fg-inverse: #ffffff; /* text/inverse */
+
+  /* Status */
+  --color-success: #15803d; /* status/success */
+  --color-success-bg: #dcfce7; /* status/success-bg */
+  --color-warning: #b45309; /* status/warning */
+  --color-warning-bg: #fef3c7; /* status/warning-bg */
+  --color-danger: #dc2626; /* status/danger */
+  --color-danger-bg: #fee2e2; /* status/danger-bg */
+  --color-info: #1d4ed8; /* status/info */
+  --color-info-bg: #dbeafe; /* status/info-bg */
+
+  /* Radius yang dipakai komponen desain */
+  --radius-control: 10px; /* Button, Input, NavItem */
+  --radius-card: 14px;
+}
+
+/* Tipografi (gaya teks Figma). Ukuran / line-height / weight persis dari variabel desain. */
+@utility type-display {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700; /* Display/28 */
+}
+@utility type-h1 {
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700; /* Heading/H1 */
+}
+@utility type-h2 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700; /* Heading/H2 */
+}
+@utility type-h3 {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600; /* Heading/H3 */
+}
+@utility type-body {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400; /* Body/Regular */
+}
+@utility type-body-medium {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500; /* Body/Medium */
+}
+@utility type-body-sm {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400; /* Body/Small */
+}
+@utility type-caption {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500; /* Caption/Medium */
+}
+@utility type-caption-bold {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700; /* Caption/Bold */
+}
+@utility type-button {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600; /* Label/Button */
+}
+@utility type-stat {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 800; /* Number/Stat */
+}
