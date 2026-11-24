@@ -42,3 +42,41 @@ Aturan: bila ada selisih, yang diikuti adalah PRD.
 | D-8 | Diskon saudara | FEE-01, US-10: otomatis | A-13, O-03, O-05 menampilkan diskon saudara | **Ditunda, tidak ada di MVP** (diputuskan) |
 
 Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) adalah contoh fiktif. Angka tersebut tidak dipakai sebagai konstanta maupun seed produksi.
+
+---
+
+## ADR-005 · SeaweedFS sebagai S3 lokal (pengganti MinIO)
+**Status:** Diterima (M0, 24 Nov 2026)
+**Konteks:** Image `minio/minio` dan `quay.io/minio/minio` tidak bisa lagi di-pull karena MinIO berhenti merilis image Docker komunitas.
+**Keputusan:** Docker Compose lokal memakai `chrislusf/seaweedfs:4.55` dengan gateway S3 di port 59000; kredensial dev disimpan di `infra/seaweedfs-s3.json`.
+**Konsekuensi:** Kode aplikasi hanya bicara lewat API S3 (interface storage), jadi produksi tetap bisa memakai object storage region Jakarta apa pun.
+
+## ADR-006 · Versi tooling
+**Status:** Diterima (M0)
+**Keputusan:**
+- TypeScript dipasang di `~6.0`, karena `typescript-eslint` 8.74 baru mendukung `<6.1`.
+- ESLint dipasang di `^9`, karena plugin di `eslint-config-next` 16 belum mendukung ESLint 10.
+**Konsekuensi:** Naikkan versi setelah peer dependency mendukung; `pnpm peers check` harus bersih.
+
+## ADR-007 · Ikon dari Figma sebagai komponen React
+**Status:** Diterima (M0)
+**Keputusan:** 34 SVG ikon diekspor dari Figma ke `packages/ui/assets/icons/`, lalu `pnpm --filter @sportgather/ui icons` menghasilkan komponen React. Geometri path tidak diubah; hanya warna stroke tetap `#0F1B3D` yang diganti `currentColor` agar ikon mengikuti state (NavItem/TabItem aktif vs default). Tidak memakai pustaka ikon pihak ketiga.
+
+## ADR-008 · Cara paket internal dikonsumsi
+**Status:** Diterima (M0)
+**Keputusan:**
+- `@sportgather/shared` dikompilasi ke `dist/` (ESM), karena dipakai oleh API (Node) dan web.
+- `@sportgather/ui` hanya berupa source dan dikompilasi oleh Next lewat `transpilePackages`. Import di dalam paket UI ditulis tanpa ekstensi, karena Turbopack tidak memetakan `.js` → `.ts`.
+- Turbo menjalankan `^build` sebelum `dev`, `typecheck`, `lint`, dan `test`.
+
+## ADR-009 · Struktur URL per peran
+**Status:** Diterima (M0)
+**Keputusan:**
+- Admin/owner: `/admin/[org]/…`
+- Pelatih: `/pelatih/[org]/…`
+- Wali: `/wali/…`. Tanpa slug klub, karena satu akun wali bisa terhubung ke banyak klub (PAR-01); klub dipilih di dalam halaman.
+- Halaman publik `/daftar/[org]` (O-01), `/masuk` (O-02), dan `/t/[token]` (link bertoken) dibuat di milestone masing-masing.
+
+## ADR-010 · Bahasa UI
+**Status:** Diterima (M0)
+**Keputusan:** MVP hanya berbahasa Indonesia. Format Rupiah, tanggal, jam, dan zona waktu ada di `@sportgather/shared`. Bahasa Inggris (PRD: opsional) ditunda; teks UI belum diekstrak ke katalog i18n.

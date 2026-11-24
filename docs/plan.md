@@ -25,12 +25,13 @@ sportgather/
 ├─ apps/
 │  ├─ web/                      Next.js App Router (PWA)
 │  │  ├─ app/
-│  │  │  ├─ (public)/daftar/[orgSlug]/     O-01 formulir pendaftaran (tanpa login)
-│  │  │  ├─ (public)/masuk/                O-02 login OTP · login email staf
-│  │  │  ├─ (public)/t/[token]/            link bertoken (RSVP, bayar) dari WhatsApp
-│  │  │  ├─ (admin)/[org]/…                A-01 … A-18 (layout sidebar)
-│  │  │  ├─ (pelatih)/[org]/…              P-01 … P-05 (layout bottom nav)
-│  │  │  └─ (wali)/…                       O-03 … O-08 (lintas klub, bottom nav)
+│  │  │  ├─ daftar/[org]/                  O-01 formulir pendaftaran (tanpa login)
+│  │  │  ├─ masuk/                         O-02 login OTP · login email staf
+│  │  │  ├─ t/[token]/                     link bertoken (RSVP, bayar) dari WhatsApp
+│  │  │  ├─ admin/[org]/…                  A-01 … A-18 (layout sidebar)
+│  │  │  ├─ pelatih/[org]/…                P-01 … P-05 (layout bottom nav)
+│  │  │  ├─ wali/…                         O-03 … O-08 (lintas klub, bottom nav)
+│  │  │  └─ design/                        katalog design system
 │  │  ├─ lib/offline/                      IndexedDB + antrean sinkron absensi
 │  │  └─ public/manifest.webmanifest, sw
 │  └─ api/                      NestJS
@@ -49,7 +50,7 @@ sportgather/
 │  ├─ ui/          design tokens (dari Figma) + komponen dasar
 │  └─ config/      tsconfig, eslint, prettier, vitest preset
 ├─ infra/
-│  └─ docker-compose.yml   postgres, redis, minio, mailpit (nama project: sportgather)
+│  └─ docker-compose.yml   postgres, redis, seaweedfs (S3), mailpit (nama project: sportgather)
 ├─ e2e/            Playwright
 └─ docs/           PRD.md, plan.md, decisions.md, design/
 ```
@@ -210,7 +211,7 @@ Setiap milestone ditutup dengan: tes lulus, lint + typecheck bersih, ringkasan p
 
 | Milestone | Isi | Kebutuhan PRD | User story | Layar |
 | --- | --- | --- | --- | --- |
-| **M0 — Fondasi** | pnpm + Turborepo; TS strict; Docker Compose (pg, redis, minio, mailpit); CI GitHub Actions (lint, typecheck, test); token Figma ke Tailwind preset; font Plus Jakarta Sans; ikon (34 ikon desain); komponen Button, Badge, Input, Avatar, NavItem, TabItem, Logo, Card, Chip; layout admin (sidebar + topbar cari) dan mobile (app bar + bottom nav); PWA manifest + SW kosong; i18n `id` + format Rp/tanggal | NFR lokalisasi | — | 00 Design System |
+| **M0 — Fondasi** | pnpm + Turborepo; TS strict; Docker Compose (pg, redis, S3/SeaweedFS, mailpit); CI GitHub Actions (lint, typecheck, test); token Figma ke Tailwind preset; font Plus Jakarta Sans; ikon (34 ikon desain); komponen Button, Badge, Input, Avatar, NavItem, TabItem, Logo, Card, Chip; layout admin (sidebar + topbar cari) dan mobile (app bar + bottom nav); PWA manifest + SW kosong; i18n `id` + format Rp/tanggal | NFR lokalisasi | — | 00 Design System |
 | **M1 — Tenant, auth, RBAC** | Org, cabang, lapangan, rekening (status *menunggu verifikasi*); undangan staf; login OTP (WA mock → SMS mock setelah 30 dtk); email+password (+2FA opsional) untuk owner/admin; sesi; RBAC guard + scope "tim sendiri"; RLS + tes isolasi; audit log; persetujuan wali berversi | ORG-01, ORG-03, FEE-08 (status), NFR keamanan & privasi | US-01 | A-01, A-02, A-03, O-02 |
 | **M2 — Pemain & KU** | Musim & kompetisi + aturan KU; mesin KU + tes; hitung ulang KU dengan pratinjau sebelum simpan; impor Excel/CSV (pemetaan kolom, error per baris, duplikat nama+tgl lahir, ≤2.000 baris <30 dtk); formulir pendaftaran wali (multi-anak, perkiraan KU, unggah dokumen terenkripsi); antrean verifikasi + audit buka dokumen + tolak wajib alasan; tim & penempatan (play-up/down); kenaikan KU massal; daftar & profil pemain | ORG-02, REG-01/02/03, KU-01/02 | US-02 … US-06 | A-04 … A-11, O-01 |
 | **M3 — Jadwal & absensi** | Jadwal berulang (RRULE) yang menghasilkan sesi sampai akhir musim; ubah satu sesi; libur; event tunggal; link bertoken (48 jam, sekali pakai); RSVP terkunci 2 jam sebelum sesi; beranda & absensi pelatih offline-first (IndexedDB, sinkron idempoten, default dari RSVP); tim saya | SCH-01/02/03, ATT-01 | US-07 … US-09 | A-12, O-04, P-01, P-02, P-03 |
