@@ -12,6 +12,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       // Modul NestJS adalah kelas kosong ber-decorator.
       '@typescript-eslint/no-extraneous-class': ['error', { allowWithDecorator: true }],
+      // Pola Drizzle `const [row] = await insert(...).returning()` selalu menghasilkan baris;
+      // dengan noUncheckedIndexedAccess, `row!` adalah cara paling jelas menyatakannya.
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
 );

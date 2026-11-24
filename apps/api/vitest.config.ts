@@ -4,5 +4,5 @@ import { defineConfig } from 'vitest/config';
 // SWC dibutuhkan agar decorator metadata NestJS ikut ter-emit saat tes.
 export default defineConfig({
   plugins: [swc.vite({ module: { type: 'es6' } })],
-  test: { environment: 'node' },
+  test: { environment: 'node', hookTimeout: 60_000, testTimeout: 20_000 },
 });
