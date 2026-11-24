@@ -63,7 +63,9 @@ export function MobileShell({
             <IconBell size={20} />
           </button>
         ) : (
-          <Avatar name={userName} />
+          <Link href="/pilih-klub" aria-label="Akun & ganti klub">
+            <Avatar name={userName} />
+          </Link>
         )}
       </header>
 

@@ -3,6 +3,7 @@
 import {
   Avatar,
   IconBell,
+  IconChevron,
   IconLogout,
   IconMore,
   IconSearch,
@@ -14,6 +15,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
+import { LogoutButton } from '@/components/auth/logout-button';
 import { ADMIN_NAV, activeEntry, hrefFor } from '@/lib/navigation';
 
 export type AdminShellProps = {
@@ -22,6 +24,8 @@ export type AdminShellProps = {
   seasonName: string;
   userName: string;
   roleLabel: string;
+  /** Tampilkan tautan ganti klub bila orang ini staf di lebih dari satu klub. */
+  hasOtherClubs?: boolean;
   children: ReactNode;
 };
 
@@ -32,6 +36,7 @@ export function AdminShell({
   seasonName,
   userName,
   roleLabel,
+  hasOtherClubs = false,
   children,
 }: AdminShellProps) {
   const pathname = usePathname();
@@ -68,13 +73,18 @@ export function AdminShell({
           </button>
         </div>
 
-        <div className="flex items-center gap-[10px] rounded-control bg-navy-700 px-3 py-[10px]">
+        <Link
+          href={hasOtherClubs ? '/pilih-klub' : base}
+          title={hasOtherClubs ? 'Ganti klub' : undefined}
+          className="flex items-center gap-[10px] rounded-control bg-navy-700 px-3 py-[10px] hover:bg-navy-700/80"
+        >
           <Avatar name={clubName} size={32} />
           <div className="min-w-0 flex-1 type-caption">
             <p className="truncate font-bold text-fg-inverse">{clubName}</p>
             <p className="truncate text-navy-muted">{seasonName}</p>
           </div>
-        </div>
+          {hasOtherClubs ? <IconChevron size={16} className="text-navy-muted" /> : null}
+        </Link>
 
         <nav aria-label="Menu utama" className="mt-[10px] flex flex-col gap-[6px]">
           {ADMIN_NAV.map((entry) => (
@@ -97,13 +107,9 @@ export function AdminShell({
             <p className="truncate font-bold text-fg-inverse">{userName}</p>
             <p className="truncate text-navy-muted">{roleLabel}</p>
           </div>
-          <button
-            type="button"
-            aria-label="Keluar"
-            className="text-navy-muted hover:text-fg-inverse"
-          >
+          <LogoutButton className="text-navy-muted hover:text-fg-inverse">
             <IconLogout size={18} />
-          </button>
+          </LogoutButton>
         </div>
       </aside>
 
