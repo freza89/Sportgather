@@ -36,7 +36,7 @@ Aturan: bila ada selisih, yang diikuti adalah PRD.
 | D-2 | Override play-down | Bagian 4: admin · US-06: owner | A-10: owner | **Owner** (diputuskan 24 Nov 2026) |
 | D-3 | Kelompok KU | KU7 (6–7 th), KU8/KU10, … | Hanya KU8–KU16 | Default KU8–KU16; **KU7 opsional** (diputuskan) |
 | D-4 | `order_id` Midtrans | ID tagihan + suffix | O-05: satu bayar untuk 2 anak | **Checkout multi-tagihan** (diputuskan) |
-| D-5 | Penyaluran | Split = dibagi per transaksi | A-15: "Cair Jumat" (batch mingguan) | Ledger per tanggal settlement (plan Q7) |
+| D-5 | Penyaluran | Split = dibagi per transaksi | A-15: "Cair Jumat" (batch mingguan) | **Penarikan manual oleh owner** (ADR-016); A-15 menampilkan saldo dapat ditarik + tombol "Tarik dana" |
 | D-6 | Login staf | Email + password + 2FA | Pelatih login OTP WhatsApp | OTP semua peran + email opsional owner/admin (plan Q6) |
 | D-7 | Biaya gateway | Pilihan klub: dibebankan ke wali atau klub | O-05 tidak menampilkan biaya | **Wali bayar biaya transaksi + owner bayar biaya penarikan** (diputuskan); O-05 perlu baris "Biaya layanan" |
 | D-8 | Diskon saudara | FEE-01, US-10: otomatis | A-13, O-03, O-05 menampilkan diskon saudara | **Ditunda, tidak ada di MVP** (diputuskan) |
@@ -134,3 +134,17 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 | D-11 | A-03 tombol "Undang staf" | Di kanan judul halaman | Di atas tabel staf (fungsi sama) |
 | D-12 | A-03 kolom "Tim" | Nama tim pelatih | "—" sampai modul tim (M2) |
 | D-13 | A-02 paket | Akademi Rp749.000 | Klub baru mulai di paket Starter (gratis); perubahan paket manual oleh tim SportGather selama pilot |
+
+---
+
+## ADR-016 · Penarikan dana manual & biaya layanan per metode
+**Status:** Diterima (24 Nov 2026), menjadi acuan M4
+**Konteks:** Keputusan Q5/Q13: wali menanggung biaya transaksi saat membayar, owner menanggung biaya transfer saat menarik dana. Owner memilih penarikan manual kapan saja.
+**Keputusan:**
+- **Saldo klub.** Bagian klub dari setiap pembayaran online masuk ke saldo klub di ledger. Saldo baru bisa ditarik setelah transaksinya settle di Midtrans.
+- **Penarikan.** Owner menekan "Tarik dana" kapan saja; ada minimal penarikan yang bisa dikonfigurasi. Dana dikirim lewat Iris, dan biaya transfer dipotong dari jumlah yang ditarik. Penarikan ditolak bila rekening belum terverifikasi.
+- **Biaya layanan wali.** Tarifnya dikonfigurasi per metode bayar (QRIS, VA, e-wallet). Biaya untuk QRIS bisa dimatikan lewat konfigurasi sambil menunggu konfirmasi Midtrans soal aturan Bank Indonesia. Bila dimatikan, biaya QRIS ditanggung klub dan dipotong dari saldo.
+**Konsekuensi:**
+- Skema ini adalah skema cadangan PRD (dana ditampung platform), sehingga risiko izin BI (PRD bagian 12, PBI No. 23/6/PBI/2021) harus dinilai konsultan hukum sebelum dibuka ke banyak klub.
+- Dana klub dicatat terpisah per klub dan setiap rupiah bisa ditelusuri ke tagihannya (US-13).
+- Antarmuka `PayoutProvider` tetap dipertahankan, sehingga Split masih bisa dipakai bila Midtrans mengonfirmasinya.
