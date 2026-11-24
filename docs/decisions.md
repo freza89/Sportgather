@@ -80,3 +80,57 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 ## ADR-010 · Bahasa UI
 **Status:** Diterima (M0)
 **Keputusan:** MVP hanya berbahasa Indonesia. Format Rupiah, tanggal, jam, dan zona waktu ada di `@sportgather/shared`. Bahasa Inggris (PRD: opsional) ditunda; teks UI belum diekstrak ke katalog i18n.
+
+---
+
+## ADR-011 · Autentikasi & sesi (M1)
+**Status:** Diterima (M1, 24 Nov 2026)
+**Keputusan:**
+- **Login utama untuk semua peran: OTP WhatsApp.**
+  - Kode 6 digit, berlaku 5 menit, maks. 5 percobaan.
+  - Maks. 5 permintaan per nomor per jam; jeda 30 detik sebelum kirim ulang.
+  - Cadangan SMS setelah 30 detik (PRD bagian 13).
+  - Kode disimpan sebagai HMAC terikat id challenge.
+- **Email + kata sandi (scrypt) adalah opsi tambahan khusus owner/admin** (keputusan plan Q6). 2FA TOTP untuk opsi ini belum dibuat (lihat "Sisa M1" di bawah).
+- **Sesi:** token acak di cookie `sg_session` (httpOnly, SameSite=Lax, Secure di produksi), berlaku 30 hari. Di database hanya disimpan SHA-256-nya, dan sesi bisa dicabut lewat logout.
+- **Anti-enumerasi:** permintaan OTP untuk nomor yang belum terdaftar mendapat respons yang sama, tetapi kodenya tidak dikirim (juga menghemat biaya WhatsApp).
+- **Web ↔ API:** browser memanggil `/api/*` di domain web; route handler Next meneruskannya ke API saat runtime. Cookie tetap first-party tanpa CORS, dan satu build bisa dipakai di semua lingkungan (rewrite Next dihitung saat build, jadi tidak dipakai).
+
+## ADR-012 · Model akun & undangan staf
+**Status:** Diterima (M1)
+**Keputusan:**
+- `person` + `user_account` (nomor WhatsApp unik) bersifat global; `staff_role` adalah tabel tenant.
+- Mengundang staf dengan nomor baru langsung membuat person + akun. Undangan (token 7 hari, hanya SHA-256 yang disimpan) dikirim lewat WhatsApp. Penerimaan wajib login dengan nomor yang diundang.
+- Pencarian undangan dari token dan cek ketersediaan slug memakai fungsi `SECURITY DEFINER` (`sg_find_invitation`, `sg_slug_taken`) dengan keluaran minimal, sehingga RLS tidak perlu dilonggarkan.
+- Aturan peran:
+  - Admin hanya bisa mengundang dan mengubah pelatih/team manager.
+  - Tidak ada yang bisa mengubah atau menghapus perannya sendiri.
+  - Klub selalu punya minimal satu owner.
+
+## ADR-013 · Pengaman RLS saat start
+**Status:** Diterima (M1)
+**Keputusan:** API menolak start bila `DATABASE_URL` terhubung sebagai superuser atau role ber-BYPASSRLS. Migrasi memakai `DATABASE_ADMIN_URL` terpisah. Tes membuat database sementara `sg_test_*` per file tes; migrasinya digilir dengan advisory lock karena role `sg_app` berlaku untuk seluruh server.
+
+## ADR-014 · Verifikasi rekening (FEE-08) di M1
+**Status:** Diterima (M1)
+**Keputusan:**
+- Rekening diverifikasi lewat interface `BankVerifier`. Mock-nya: nomor berakhiran `0000` ditolak, berakhiran `9999` menunggu, sisanya lolos. Implementasi nyata (validasi rekening Iris/penerima Split) menyusul di M4.
+- Hanya owner yang boleh mengganti rekening. Rekening lama ditandai `replaced`, sehingga hanya ada satu rekening aktif per klub (dijaga unique index).
+- Perubahan rekening masuk audit log tanpa nomor lengkap.
+
+## ADR-015 · Data `person` belum dilindungi RLS
+**Status:** Diterima sementara (M1) — ditinjau di M2
+**Konteks:** Di M1, `person`/`user_account` hanya berisi data staf dan wali (nama, nomor), dan semua akses lewat API dengan pengecekan peran.
+**Keputusan:** Policy RLS untuk `person` (terlihat bila ada `membership` di klub aktif atau `guardian_link` dengan orang yang login) ditambahkan di M2, bersamaan dengan masuknya data anak.
+
+---
+
+## Selisih desain (tambahan M1)
+
+| # | Topik | Desain | Implementasi |
+| --- | --- | --- | --- |
+| D-9 | A-01 data owner | Hanya "Nomor WhatsApp owner" | Ditambah "Nama lengkap" + verifikasi OTP di langkah 1, karena akun owner butuh nama dan nomor terverifikasi |
+| D-10 | A-01/A-02 logo | Unggah logo | Ditampilkan nonaktif; unggah file dibuat bersama penyimpanan dokumen (M2) |
+| D-11 | A-03 tombol "Undang staf" | Di kanan judul halaman | Di atas tabel staf (fungsi sama) |
+| D-12 | A-03 kolom "Tim" | Nama tim pelatih | "—" sampai modul tim (M2) |
+| D-13 | A-02 paket | Akademi Rp749.000 | Klub baru mulai di paket Starter (gratis); perubahan paket manual oleh tim SportGather selama pilot |

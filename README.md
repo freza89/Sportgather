@@ -9,15 +9,16 @@ SaaS manajemen klub olahraga usia muda (KU7–KU16) untuk Indonesia: pemain per 
 
 ## Struktur
 
-| Path              | Isi                                                                    |
-| ----------------- | ---------------------------------------------------------------------- |
-| `apps/web`        | Next.js (App Router) PWA untuk admin, pelatih, dan wali                |
-| `apps/api`        | NestJS (Fastify) REST API + OpenAPI di `/docs`                         |
-| `packages/shared` | Tipe & util bersama (format Rupiah/tanggal/zona waktu; nanti mesin KU) |
-| `packages/ui`     | Design tokens Figma (Tailwind v4), ikon, komponen dasar                |
-| `packages/config` | tsconfig bersama                                                       |
-| `e2e`             | Playwright smoke test                                                  |
-| `infra`           | Docker Compose lokal: Postgres, Redis, S3 (SeaweedFS), Mailpit         |
+| Path              | Isi                                                                         |
+| ----------------- | --------------------------------------------------------------------------- |
+| `apps/web`        | Next.js (App Router) PWA untuk admin, pelatih, dan wali                     |
+| `apps/api`        | NestJS (Fastify) REST API + OpenAPI di `/docs`                              |
+| `packages/shared` | Kontrak API (Zod), RBAC, util Rupiah/tanggal/nomor WA; nanti mesin KU       |
+| `packages/db`     | Skema Drizzle, migrasi, policy RLS, helper `withTenant`, tes isolasi tenant |
+| `packages/ui`     | Design tokens Figma (Tailwind v4), ikon, komponen dasar                     |
+| `packages/config` | tsconfig bersama                                                            |
+| `e2e`             | Playwright smoke test                                                       |
+| `infra`           | Docker Compose lokal: Postgres, Redis, S3 (SeaweedFS), Mailpit              |
 
 ## Menjalankan secara lokal
 
@@ -27,21 +28,23 @@ Prasyarat: Node 22.12+, pnpm 12, Docker.
 cp .env.example .env
 pnpm install
 pnpm infra:up          # postgres :55432, redis :56379, S3 :59000, mailpit UI :58025
+pnpm db:migrate        # skema + RLS; mengaktifkan role sg_app untuk aplikasi
 pnpm dev               # web http://localhost:3000 · api http://localhost:4000 (docs: /docs)
 ```
 
-Halaman yang tersedia di M0:
+Mencoba aplikasi (M1):
 
-- `/`: pilih peran
-- `/design`: katalog design system
-- `/admin/demo`: shell admin (sidebar)
-- `/pelatih/demo`: shell pelatih (bottom nav)
-- `/wali`: shell wali (bottom nav)
+1. Buka http://localhost:3000/daftar-klub dan daftarkan klub. WhatsApp masih mock: kode OTP bisa dilihat di http://localhost:3000/api/dev/outbox.
+2. Klub baru langsung bisa dikelola di `/admin/<slug-klub>`. Menu **Pengaturan** berisi profil, lokasi, rekening, staf, dan langganan.
+3. Undang staf di **Pengaturan › Staf & peran**. Link undangan muncul di outbox mock.
+4. Rekening mock: nomor berakhiran `0000` ditolak, `9999` menunggu verifikasi, nomor lain lolos.
+
+Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/design` (design system).
 
 ## Pemeriksaan
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test && pnpm build
+pnpm lint && pnpm typecheck && pnpm test && pnpm build   # tes DB/API butuh Postgres dari infra:up
 pnpm --filter @sportgather/e2e e2e:install   # sekali, unduh Chromium
 pnpm --filter @sportgather/e2e e2e
 ```
