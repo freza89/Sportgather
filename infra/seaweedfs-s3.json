@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "sportgather-dev",
+      "credentials": [{ "accessKey": "sportgather", "secretKey": "sportgather-dev-secret" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}
