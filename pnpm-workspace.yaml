@@ -35,3 +35,5 @@ allowBuilds:
   esbuild: true
   sharp: true
   '@scarf/scarf': false
+  # Akselerator native opsional milik BullMQ (msgpackr); tanpa build tetap jalan versi JS.
+  msgpackr-extract: false
