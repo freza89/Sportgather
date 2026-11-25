@@ -159,10 +159,10 @@ export class AuthController {
   @Get('session')
   @UseGuards(AuthGuard)
   async current(@CurrentUser() user: AuthUser) {
-    const [p] = await this.db
-      .select({ fullName: person.fullName })
-      .from(person)
-      .where(eq(person.id, user.personId));
+    // RLS person: orang hanya bisa membaca dirinya sendiri lewat konteks app.person_id.
+    const [p] = await withContext(this.db, { personId: user.personId }, (tx) =>
+      tx.select({ fullName: person.fullName }).from(person).where(eq(person.id, user.personId)),
+    );
     return { personId: user.personId, fullName: p?.fullName ?? null };
   }
 }

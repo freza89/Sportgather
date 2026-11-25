@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 const DEV_AUTH_SECRET = 'dev-only-secret-change-me-dev-only-secret';
+// 32 byte (base64) — HANYA untuk lokal/tes.
+const DEV_DOCUMENT_KEY = 'ZGV2LW9ubHktZG9jdW1lbnQta2V5LTMyLWJ5dGVzISE=';
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -14,6 +16,21 @@ const EnvSchema = z.object({
   WHATSAPP_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   SMS_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   BANK_VERIFICATION_PROVIDER: z.enum(['mock', 'real']).default('mock'),
+  /** memory (tes) | s3 (lokal: SeaweedFS, produksi: object storage region Jakarta). */
+  STORAGE_PROVIDER: z.enum(['memory', 's3']).default('s3'),
+  S3_ENDPOINT: z.string().default('http://localhost:59000'),
+  S3_REGION: z.string().default('ap-southeast-3'),
+  S3_ACCESS_KEY: z.string().default('sportgather'),
+  S3_SECRET_KEY: z.string().default('sportgather-dev-secret'),
+  S3_BUCKET: z.string().default('sportgather-documents'),
+  /** Kunci AES-256 (base64, 32 byte) untuk enkripsi dokumen anak sebelum disimpan. */
+  DOCUMENT_ENCRYPTION_KEY: z
+    .string()
+    .default(DEV_DOCUMENT_KEY)
+    .refine(
+      (v) => Buffer.from(v, 'base64').length === 32,
+      'DOCUMENT_ENCRYPTION_KEY harus 32 byte (base64)',
+    ),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
