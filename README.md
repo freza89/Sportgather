@@ -47,6 +47,13 @@ Mencoba M2 (pemain & KU):
 4. **Pendaftaran online:** buka `/daftar/<slug-klub>` (link bisa disalin di Pemain › Verifikasi), lalu verifikasi pendaftarnya di **Pemain › Verifikasi**.
 5. **Kenaikan KU:** Tim & KU › Kenaikan KU musim baru.
 
+Mencoba M3 (jadwal & absensi):
+
+1. **Jadwal › Buat jadwal:** buat latihan rutin mingguan (sesi dibuat sampai akhir musim) atau event sekali. Klik sesi untuk mengubah atau membatalkan; wali & pelatih dikabari lewat WhatsApp (mock).
+2. **Pelatih:** buka `/pelatih/<slug-klub>` → **Mulai absensi**. Absensi tetap bisa diisi tanpa internet dan tersinkron otomatis saat online.
+3. **Wali:** buka **Jadwal** untuk mengisi RSVP (ditutup 2 jam sebelum sesi).
+4. **Pengingat H-1 pukul 17.00:** setel `JOBS_ENABLED=true` di `.env` (butuh Redis dari `infra:up`). Link RSVP bertoken muncul di outbox mock.
+
 Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/wali` (area orang tua), `/design` (design system).
 
 ## Pemeriksaan
