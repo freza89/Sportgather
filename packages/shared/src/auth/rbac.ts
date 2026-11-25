@@ -37,6 +37,8 @@ export const PERMISSIONS = {
   'attendance.record_team': ['owner', 'admin', 'coach', 'team_manager'],
   'assessment.record_team': ['owner', 'admin', 'coach'],
   'billing.manage': ['owner', 'admin'],
+  /** Beasiswa ditetapkan per pemain oleh owner (desain A-13). */
+  'billing.scholarship': ['owner'],
   'payout.view': ['owner', 'admin'],
   'payout.withdraw': ['owner'],
   'announcement.send_club': ['owner', 'admin'],

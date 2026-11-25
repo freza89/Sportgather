@@ -144,7 +144,7 @@ export interface PlayerListResponse {
 
 export interface DocumentDto {
   id: string;
-  kind: 'akta' | 'kia' | 'kk' | 'foto';
+  kind: 'akta' | 'kia' | 'kk' | 'foto' | 'bukti_bayar';
   fileName: string;
   mimeType: string;
   status: 'pending' | 'verified' | 'rejected';
