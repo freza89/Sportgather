@@ -382,8 +382,14 @@ export class PaymentsService {
    * dicek ulang ke Status API sebelum apa pun diubah. Aman diterima berkali-kali.
    */
   async handleNotification(n: MidtransNotification): Promise<{ ok: true; ignored?: string }> {
-    if (!verifyMidtransSignature(n, this.env.MIDTRANS_SERVER_KEY))
+    if (!verifyMidtransSignature(n, this.env.MIDTRANS_SERVER_KEY)) {
+      // Penyebab tersering: MIDTRANS_SERVER_KEY berbeda dengan server key aktif di dashboard
+      // (mis. key sudah di-regenerate). Pembayaran tetap tercatat lewat job rekonsiliasi.
+      this.logger.error(
+        `Signature notifikasi Midtrans tidak cocok untuk ${n.order_id}. Periksa MIDTRANS_SERVER_KEY.`,
+      );
       throw new ForbiddenException('Signature tidak valid');
+    }
     const [found] = await withContext(this.db, {}, (tx) =>
       tx.execute<{ attempt_id: string; org_id: string }>(
         sql`select attempt_id, org_id from sg_find_payment_attempt(${n.order_id})`,
@@ -569,6 +575,54 @@ export class PaymentsService {
         link: `${this.env.WEB_ORIGIN}/wali/bayar/${co.id}`,
       },
     });
+  }
+
+  /**
+   * Jaring pengaman bila webhook tidak sampai/ditolak dan wali tidak kembali ke halaman status:
+   * cek ulang checkout pending berumur 5 menit s.d. 2 hari ke Status API.
+   */
+  async reconcilePending(now = new Date()): Promise<{ checked: number; paid: number }> {
+    let checked = 0;
+    let paid = 0;
+    const from = new Date(now.getTime() - 48 * 3_600_000);
+    const to = new Date(now.getTime() - 5 * 60_000);
+    const orgIds = (
+      await withContext(this.db, {}, (tx) =>
+        tx.execute<{ id: string }>(sql`select sg_all_org_ids() as id`),
+      )
+    ).map((r) => r.id);
+    for (const orgId of orgIds) {
+      const attempts = await withTenant(this.db, orgId, undefined, (tx) =>
+        tx
+          .select({ orderId: paymentAttempt.orderId, checkoutId: checkout.id })
+          .from(paymentAttempt)
+          .innerJoin(checkout, eq(checkout.id, paymentAttempt.checkoutId))
+          .where(
+            and(
+              eq(checkout.status, 'pending'),
+              gt(checkout.createdAt, from),
+              lte(checkout.createdAt, to),
+            ),
+          ),
+      );
+      for (const a of attempts) {
+        checked++;
+        try {
+          await this.reconcile(orgId, a.orderId, 'reconcile-job');
+        } catch (e) {
+          this.logger.warn(`Rekonsiliasi ${a.orderId} gagal: ${(e as Error).message}`);
+          continue;
+        }
+        const [co] = await withTenant(this.db, orgId, undefined, (tx) =>
+          tx
+            .select({ status: checkout.status })
+            .from(checkout)
+            .where(eq(checkout.id, a.checkoutId)),
+        );
+        if (co?.status === 'paid') paid++;
+      }
+    }
+    return { checked, paid };
   }
 
   // ── A-15 · Penyaluran & penarikan dana (ADR-016) ───────────────────────────

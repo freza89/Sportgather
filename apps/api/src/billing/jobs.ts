@@ -14,7 +14,7 @@ import { PaymentsService } from './payments.service.js';
 const QUEUE = 'sportgather-billing';
 
 /**
- * Job iuran (tiap jam): terbit tagihan bulanan saat tanggal terbit tiba dan pengingat
+ * Job iuran (tiap 15 menit): terbit tagihan bulanan saat tanggal terbit tiba, rekonsiliasi checkout pending ke Midtrans, dan pengingat
  * H-3/H/H+3/H+7. Keduanya idempoten (unique index & dedupe log). Hanya bila JOBS_ENABLED.
  */
 @Injectable()
@@ -36,7 +36,7 @@ export class BillingJobs implements OnModuleInit, OnApplicationShutdown {
     this.queue = new Queue(QUEUE, { connection: this.connection });
     await this.queue.upsertJobScheduler(
       'billing-hourly',
-      { every: 60 * 60_000 },
+      { every: 15 * 60_000 },
       {
         name: 'billing-hourly',
       },
@@ -47,6 +47,8 @@ export class BillingJobs implements OnModuleInit, OnApplicationShutdown {
         if (job.name !== 'billing-hourly') return;
         const { created } = await this.billing.runIssuance(new Date());
         if (created) this.logger.log(`Tagihan terbit: ${created}`);
+        const rec = await this.payments.reconcilePending(new Date());
+        if (rec.paid) this.logger.log(`Pembayaran tercatat lewat rekonsiliasi: ${rec.paid}`);
         const { sent } = await this.payments.runReminders(new Date());
         if (sent) this.logger.log(`Pengingat iuran terkirim: ${sent}`);
       },

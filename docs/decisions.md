@@ -256,6 +256,7 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 - **Tagihan yang ternyata sudah lunas** (mis. dicatat manual saat wali sedang bayar online): dana tetap masuk ledger klub dan dicatat di audit (`doublePaid`) untuk dikembalikan manual.
 - **Ledger** append-only per tagihan: `club_gross` +total, `platform_fee` −bagian fee, `midtrans_fee` −bagian biaya Midtrans yang ditanggung klub (QRIS saat biaya layanannya dimatikan). Pembagian memakai sisa terbesar, jadi setiap rupiah bisa ditelusuri ke tagihannya (US-13). Pembayaran manual tidak masuk ledger.
 - **Penarikan:** dikunci per klub (advisory lock). Saldo dicadangkan dulu lewat entri ledger negatif, lalu Iris dipanggil. Bila gagal, dibuat entri balik. Rekening belum terverifikasi berarti dana ditahan (FEE-07).
+- **Rekonsiliasi berkala:** job (tiap 15 menit, `JOBS_ENABLED`) mengecek ulang checkout pending berumur 5 menit s.d. 2 hari ke Status API. Jaring pengaman bila webhook tidak sampai/ditolak dan wali tidak kembali ke halaman status.
 - **`PAYOUT_PROVIDER` terpisah dari `PAYMENT_PROVIDER`**, sehingga Snap sandbox bisa dipakai sebelum akses Iris tersedia.
 
 ## ADR-025 · Penerbitan tagihan

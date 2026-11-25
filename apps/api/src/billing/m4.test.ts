@@ -353,4 +353,27 @@ describe('M4 · iuran & pembayaran', () => {
       );
     });
   });
+  describe('rekonsiliasi tanpa webhook', () => {
+    it('checkout yang dibayar tapi webhook-nya tidak sampai tercatat oleh job', async () => {
+      const inv = (await wali.call('GET', '/v1/me/invoices')).body as { id: string }[];
+      expect(inv.length).toBeGreaterThan(0);
+      const co = await wali.call('POST', '/v1/me/checkout', {
+        invoiceIds: inv.map((i) => i.id),
+        method: 'qris',
+      });
+      expect(co.status, JSON.stringify(co.body)).toBe(201);
+      // Bayar di Midtrans, tetapi notifikasinya tidak pernah dikirim.
+      h.app.get(MockMidtrans).simulate(co.body.orderId, 'settlement');
+      const { PaymentsService } = await import('./payments.service.js');
+      const svc = h.app.get(PaymentsService);
+      // Terlalu baru (< 5 menit) → belum dicek.
+      expect((await svc.reconcilePending()).checked).toBe(0);
+      await h.db.admin.db.execute(
+        sql`update checkout set created_at = now() - interval '10 minutes' where id = ${co.body.checkoutId}`,
+      );
+      expect(await svc.reconcilePending()).toMatchObject({ checked: 1, paid: 1 });
+      expect((await wali.call('GET', '/v1/me/invoices')).body).toHaveLength(0);
+      expect((await svc.reconcilePending()).checked).toBe(0);
+    });
+  });
 });
