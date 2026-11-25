@@ -45,6 +45,7 @@ describe('loadEnv', () => {
         WHATSAPP_PROVIDER: 'real',
         SMS_PROVIDER: 'real',
         BANK_VERIFICATION_PROVIDER: 'real',
+        PAYOUT_PROVIDER: 'real',
       }),
     ).toThrow(/AUTH_SECRET/);
   });

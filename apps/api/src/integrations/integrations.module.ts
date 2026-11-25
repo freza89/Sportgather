@@ -2,6 +2,13 @@ import { Global, Module } from '@nestjs/common';
 import { ENV, type Env } from '../config/env.js';
 import { BANK_VERIFIER, MockBankVerifier } from './bank-verification.js';
 import { MockOutbox, SMS_SENDER, WHATSAPP_SENDER } from './messaging.js';
+import {
+  MidtransHttpGateway,
+  MockIris,
+  MockMidtrans,
+  PAYMENT_GATEWAY,
+  PAYOUT_PROVIDER,
+} from './midtrans.js';
 
 function notConfigured(name: string): never {
   throw new Error(
@@ -14,6 +21,25 @@ function notConfigured(name: string): never {
   providers: [
     MockOutbox,
     MockBankVerifier,
+    MockMidtrans,
+    MockIris,
+    {
+      provide: PAYMENT_GATEWAY,
+      inject: [ENV, MockMidtrans],
+      useFactory: (env: Env, mock: MockMidtrans) => {
+        if (env.PAYMENT_PROVIDER === 'real')
+          return new MidtransHttpGateway(env.MIDTRANS_SERVER_KEY, env.MIDTRANS_IS_PRODUCTION);
+        mock.configure(env.WEB_ORIGIN, env.MIDTRANS_SERVER_KEY);
+        return mock;
+      },
+    },
+    {
+      provide: PAYOUT_PROVIDER,
+      inject: [ENV, MockIris],
+      // Iris asli menyusul bersama akses Midtrans (ADR-016).
+      useFactory: (env: Env, mock: MockIris) =>
+        env.PAYOUT_PROVIDER === 'mock' ? mock : notConfigured('PAYOUT_PROVIDER (Iris)'),
+    },
     {
       provide: WHATSAPP_SENDER,
       inject: [ENV, MockOutbox],
@@ -37,6 +63,14 @@ function notConfigured(name: string): never {
           : notConfigured('BANK_VERIFICATION_PROVIDER'),
     },
   ],
-  exports: [MockOutbox, WHATSAPP_SENDER, SMS_SENDER, BANK_VERIFIER],
+  exports: [
+    MockOutbox,
+    WHATSAPP_SENDER,
+    SMS_SENDER,
+    BANK_VERIFIER,
+    MockMidtrans,
+    PAYMENT_GATEWAY,
+    PAYOUT_PROVIDER,
+  ],
 })
 export class IntegrationsModule {}

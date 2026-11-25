@@ -16,7 +16,29 @@ const EnvSchema = z.object({
   WHATSAPP_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   SMS_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   BANK_VERIFICATION_PROVIDER: z.enum(['mock', 'real']).default('mock'),
+  /** Penyaluran dana (Iris). Terpisah dari PAYMENT_PROVIDER: Snap sandbox bisa dipakai sebelum Iris aktif. */
+  PAYOUT_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   REDIS_URL: z.string().default('redis://localhost:56379'),
+  /** Server key Midtrans (sandbox/produksi). Default hanya untuk mock lokal. */
+  MIDTRANS_SERVER_KEY: z.preprocess(
+    (v) => (v === '' ? undefined : v),
+    z.string().min(8).default('SB-Mid-server-MOCK-sportgather'),
+  ),
+  MIDTRANS_IS_PRODUCTION: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
+  /** Fee platform per pembayaran online (rupiah). */
+  PLATFORM_FEE: z.coerce.number().int().min(0).default(2500),
+  /** ADR-016: biaya layanan QRIS ke wali dimatikan sampai dikonfirmasi Midtrans. */
+  QRIS_SERVICE_FEE_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
+  WITHDRAWAL_MIN: z.coerce.number().int().min(0).default(50_000),
+  WITHDRAWAL_FEE: z.coerce.number().int().min(0).default(2_500),
+  /** Jeda dana settle sebelum bisa ditarik (jam). Mock: 0. */
+  SETTLEMENT_DELAY_HOURS: z.coerce.number().int().min(0).default(0),
   /** Job terjadwal (pengingat H-1, dst.) lewat BullMQ. Mati di tes; nyalakan di satu instance. */
   JOBS_ENABLED: z
     .enum(['true', 'false'])
@@ -55,6 +77,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
         'WHATSAPP_PROVIDER',
         'SMS_PROVIDER',
         'BANK_VERIFICATION_PROVIDER',
+        'PAYOUT_PROVIDER',
       ] as const
     ).filter((k) => env[k] === 'mock');
     if (mocks.length)
@@ -62,6 +85,12 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     if (env.AUTH_SECRET === DEV_AUTH_SECRET)
       throw new Error('AUTH_SECRET wajib diatur di production');
   }
+  if (env.PAYMENT_PROVIDER === 'real' && env.MIDTRANS_SERVER_KEY.includes('MOCK'))
+    throw new Error(
+      'PAYMENT_PROVIDER=real butuh MIDTRANS_SERVER_KEY asli (sandbox: SB-Mid-server-…)',
+    );
+  if (env.MIDTRANS_IS_PRODUCTION && env.MIDTRANS_SERVER_KEY.startsWith('SB-'))
+    throw new Error('MIDTRANS_IS_PRODUCTION=true tapi server key masih sandbox');
   return env;
 }
 
