@@ -48,6 +48,7 @@ import {
 } from '@sportgather/shared';
 import { and, asc, desc, eq, inArray, lte, gt, sql } from 'drizzle-orm';
 import { AuditService } from '../audit/audit.service.js';
+import { BillingNotifications } from './billing-notifications.js';
 import type { AuthUser, OrgContext } from '../common/request.js';
 import { ENV, type Env } from '../config/env.js';
 import { DB } from '../db/db.module.js';
@@ -82,6 +83,7 @@ export class PaymentsService {
     @Inject(PAYOUT_PROVIDER) private readonly payout: PayoutProvider,
     @Inject(WHATSAPP_SENDER) private readonly whatsapp: MessageSender,
     private readonly audit: AuditService,
+    private readonly billingNotifications: BillingNotifications,
   ) {}
 
   get feePolicy(): FeePolicy {
@@ -575,6 +577,7 @@ export class PaymentsService {
         link: `${this.env.WEB_ORIGIN}/wali/bayar/${co.id}`,
       },
     });
+    await this.billingNotifications.paidPush(co.guardianPersonId, co.gross, co.id);
   }
 
   /**
@@ -794,7 +797,7 @@ export class PaymentsService {
     } catch (e) {
       result = { status: 'failed', providerRef: '', failureReason: (e as Error).message };
     }
-    return withTenant(this.db, ctx.id, user.personId, async (tx) => {
+    const out = await withTenant(this.db, ctx.id, user.personId, async (tx) => {
       await tx
         .update(withdrawal)
         .set({
@@ -830,6 +833,8 @@ export class PaymentsService {
         failureReason: result.failureReason ?? null,
       };
     });
+    await this.billingNotifications.withdrawalResult(ctx.id, user.personId, out);
+    return out;
   }
 
   // ── Pengingat tagihan (PRD bagian 16) ──────────────────────────────────────

@@ -26,6 +26,7 @@ import {
   TokenRsvpSchema,
 } from '@sportgather/shared';
 import { z } from 'zod';
+import { AnnouncementsModule } from '../announcements/announcements.controller.js';
 import { AuditService } from '../audit/audit.service.js';
 import { AuthGuard, CurrentUser } from '../auth/auth.guard.js';
 import { clientMeta, type AppRequest, type AuthUser, type OrgContext } from '../common/request.js';
@@ -246,6 +247,7 @@ export class TokenRsvpController {
 }
 
 @Module({
+  imports: [AnnouncementsModule],
   controllers: [ScheduleController, CoachController, MyScheduleController, TokenRsvpController],
   providers: [
     ScheduleService,

@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
-    "midtrans:check": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env scripts/midtrans-sandbox-check.mjs"
+    "midtrans:check": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env scripts/midtrans-sandbox-check.mjs",
+    "vapid:generate": "node scripts/vapid-generate.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1177.0",

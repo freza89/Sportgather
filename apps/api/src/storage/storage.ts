@@ -1,6 +1,7 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import {
   CreateBucketCommand,
+  DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
   PutObjectCommand,
@@ -13,6 +14,7 @@ import { ENV, type Env } from '../config/env.js';
 export interface BlobStore {
   put(key: string, body: Buffer): Promise<void>;
   get(key: string): Promise<Buffer>;
+  delete(key: string): Promise<void>;
 }
 
 export const BLOB_STORE = Symbol('BLOB_STORE');
@@ -26,6 +28,9 @@ export class MemoryBlobStore implements BlobStore {
     const v = this.objects.get(key);
     if (!v) throw new Error(`Objek tidak ada: ${key}`);
     return v;
+  }
+  async delete(key: string) {
+    this.objects.delete(key);
   }
 }
 
@@ -67,6 +72,10 @@ export class S3BlobStore implements BlobStore, OnModuleInit {
       new GetObjectCommand({ Bucket: this.env.S3_BUCKET, Key: key }),
     );
     return Buffer.from(await res.Body!.transformToByteArray());
+  }
+
+  async delete(key: string) {
+    await this.client.send(new DeleteObjectCommand({ Bucket: this.env.S3_BUCKET, Key: key }));
   }
 }
 
@@ -116,6 +125,10 @@ export class DocumentVault {
     const storageKey = `orgs/${orgId}/documents/${crypto.randomUUID()}`;
     await this.store.put(storageKey, Buffer.concat([iv, cipher.getAuthTag(), encrypted]));
     return { storageKey, sha256: createHash('sha256').update(plain).digest('hex') };
+  }
+
+  async remove(storageKey: string): Promise<void> {
+    await this.store.delete(storageKey);
   }
 
   async read(storageKey: string): Promise<Buffer> {
