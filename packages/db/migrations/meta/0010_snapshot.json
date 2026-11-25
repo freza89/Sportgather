@@ -86,13 +86,9 @@
         "auth_event_user_id_user_account_id_fk": {
           "name": "auth_event_user_id_user_account_id_fk",
           "tableFrom": "auth_event",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "user_account",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -162,26 +158,18 @@
         "guardian_link_guardian_person_id_person_id_fk": {
           "name": "guardian_link_guardian_person_id_person_id_fk",
           "tableFrom": "guardian_link",
-          "columnsFrom": [
-            "guardian_person_id"
-          ],
+          "columnsFrom": ["guardian_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "guardian_link_child_person_id_person_id_fk": {
           "name": "guardian_link_child_person_id_person_id_fk",
           "tableFrom": "guardian_link",
-          "columnsFrom": [
-            "child_person_id"
-          ],
+          "columnsFrom": ["child_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -189,10 +177,7 @@
       "compositePrimaryKeys": {
         "guardian_link_guardian_person_id_child_person_id_pk": {
           "name": "guardian_link_guardian_person_id_child_person_id_pk",
-          "columns": [
-            "guardian_person_id",
-            "child_person_id"
-          ]
+          "columns": ["guardian_person_id", "child_person_id"]
         }
       },
       "uniqueConstraints": {},
@@ -445,13 +430,9 @@
         "session_user_id_user_account_id_fk": {
           "name": "session_user_id_user_account_id_fk",
           "tableFrom": "session",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "user_account",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -569,13 +550,9 @@
         "user_account_person_id_person_id_fk": {
           "name": "user_account_person_id_person_id_fk",
           "tableFrom": "user_account",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -681,26 +658,18 @@
         "audit_log_org_id_organization_id_fk": {
           "name": "audit_log_org_id_organization_id_fk",
           "tableFrom": "audit_log",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "audit_log_actor_person_id_person_id_fk": {
           "name": "audit_log_actor_person_id_person_id_fk",
           "tableFrom": "audit_log",
-          "columnsFrom": [
-            "actor_person_id"
-          ],
+          "columnsFrom": ["actor_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -817,26 +786,18 @@
         "bank_account_org_id_organization_id_fk": {
           "name": "bank_account_org_id_organization_id_fk",
           "tableFrom": "bank_account",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "bank_account_submitted_by_person_id_fk": {
           "name": "bank_account_submitted_by_person_id_fk",
           "tableFrom": "bank_account",
-          "columnsFrom": [
-            "submitted_by"
-          ],
+          "columnsFrom": ["submitted_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -925,13 +886,9 @@
         "branch_org_id_organization_id_fk": {
           "name": "branch_org_id_organization_id_fk",
           "tableFrom": "branch",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -1032,26 +989,18 @@
         "competition_org_id_organization_id_fk": {
           "name": "competition_org_id_organization_id_fk",
           "tableFrom": "competition",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "competition_season_id_season_id_fk": {
           "name": "competition_season_id_season_id_fk",
           "tableFrom": "competition",
-          "columnsFrom": [
-            "season_id"
-          ],
+          "columnsFrom": ["season_id"],
           "tableTo": "season",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -1150,39 +1099,27 @@
         "consent_org_id_organization_id_fk": {
           "name": "consent_org_id_organization_id_fk",
           "tableFrom": "consent",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "consent_guardian_person_id_person_id_fk": {
           "name": "consent_guardian_person_id_person_id_fk",
           "tableFrom": "consent",
-          "columnsFrom": [
-            "guardian_person_id"
-          ],
+          "columnsFrom": ["guardian_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "consent_subject_person_id_person_id_fk": {
           "name": "consent_subject_person_id_person_id_fk",
           "tableFrom": "consent",
-          "columnsFrom": [
-            "subject_person_id"
-          ],
+          "columnsFrom": ["subject_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1320,52 +1257,36 @@
         "document_org_id_organization_id_fk": {
           "name": "document_org_id_organization_id_fk",
           "tableFrom": "document",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "document_person_id_person_id_fk": {
           "name": "document_person_id_person_id_fk",
           "tableFrom": "document",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "document_uploaded_by_person_id_fk": {
           "name": "document_uploaded_by_person_id_fk",
           "tableFrom": "document",
-          "columnsFrom": [
-            "uploaded_by"
-          ],
+          "columnsFrom": ["uploaded_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "document_reviewed_by_person_id_fk": {
           "name": "document_reviewed_by_person_id_fk",
           "tableFrom": "document",
-          "columnsFrom": [
-            "reviewed_by"
-          ],
+          "columnsFrom": ["reviewed_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1473,39 +1394,27 @@
         "invitation_org_id_organization_id_fk": {
           "name": "invitation_org_id_organization_id_fk",
           "tableFrom": "invitation",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "invitation_staff_role_id_staff_role_id_fk": {
           "name": "invitation_staff_role_id_staff_role_id_fk",
           "tableFrom": "invitation",
-          "columnsFrom": [
-            "staff_role_id"
-          ],
+          "columnsFrom": ["staff_role_id"],
           "tableTo": "staff_role",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "invitation_invited_by_person_id_fk": {
           "name": "invitation_invited_by_person_id_fk",
           "tableFrom": "invitation",
-          "columnsFrom": [
-            "invited_by"
-          ],
+          "columnsFrom": ["invited_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1680,52 +1589,36 @@
         "membership_org_id_organization_id_fk": {
           "name": "membership_org_id_organization_id_fk",
           "tableFrom": "membership",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "membership_person_id_person_id_fk": {
           "name": "membership_person_id_person_id_fk",
           "tableFrom": "membership",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "membership_registered_by_person_id_fk": {
           "name": "membership_registered_by_person_id_fk",
           "tableFrom": "membership",
-          "columnsFrom": [
-            "registered_by"
-          ],
+          "columnsFrom": ["registered_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "membership_reviewed_by_person_id_fk": {
           "name": "membership_reviewed_by_person_id_fk",
           "tableFrom": "membership",
-          "columnsFrom": [
-            "reviewed_by"
-          ],
+          "columnsFrom": ["reviewed_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1946,26 +1839,18 @@
         "season_org_id_organization_id_fk": {
           "name": "season_org_id_organization_id_fk",
           "tableFrom": "season",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "season_primary_competition_id_competition_id_fk": {
           "name": "season_primary_competition_id_competition_id_fk",
           "tableFrom": "season",
-          "columnsFrom": [
-            "primary_competition_id"
-          ],
+          "columnsFrom": ["primary_competition_id"],
           "tableTo": "competition",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "set null"
         }
@@ -2064,26 +1949,18 @@
         "staff_role_org_id_organization_id_fk": {
           "name": "staff_role_org_id_organization_id_fk",
           "tableFrom": "staff_role",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "staff_role_person_id_person_id_fk": {
           "name": "staff_role_person_id_person_id_fk",
           "tableFrom": "staff_role",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2184,39 +2061,27 @@
         "team_org_id_organization_id_fk": {
           "name": "team_org_id_organization_id_fk",
           "tableFrom": "team",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_season_id_season_id_fk": {
           "name": "team_season_id_season_id_fk",
           "tableFrom": "team",
-          "columnsFrom": [
-            "season_id"
-          ],
+          "columnsFrom": ["season_id"],
           "tableTo": "season",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_branch_id_branch_id_fk": {
           "name": "team_branch_id_branch_id_fk",
           "tableFrom": "team",
-          "columnsFrom": [
-            "branch_id"
-          ],
+          "columnsFrom": ["branch_id"],
           "tableTo": "branch",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2255,39 +2120,27 @@
         "team_competition_org_id_organization_id_fk": {
           "name": "team_competition_org_id_organization_id_fk",
           "tableFrom": "team_competition",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_competition_team_id_team_id_fk": {
           "name": "team_competition_team_id_team_id_fk",
           "tableFrom": "team_competition",
-          "columnsFrom": [
-            "team_id"
-          ],
+          "columnsFrom": ["team_id"],
           "tableTo": "team",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_competition_competition_id_competition_id_fk": {
           "name": "team_competition_competition_id_competition_id_fk",
           "tableFrom": "team_competition",
-          "columnsFrom": [
-            "competition_id"
-          ],
+          "columnsFrom": ["competition_id"],
           "tableTo": "competition",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -2295,10 +2148,7 @@
       "compositePrimaryKeys": {
         "team_competition_team_id_competition_id_pk": {
           "name": "team_competition_team_id_competition_id_pk",
-          "columns": [
-            "team_id",
-            "competition_id"
-          ]
+          "columns": ["team_id", "competition_id"]
         }
       },
       "uniqueConstraints": {},
@@ -2430,65 +2280,45 @@
         "team_member_org_id_organization_id_fk": {
           "name": "team_member_org_id_organization_id_fk",
           "tableFrom": "team_member",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_member_team_id_team_id_fk": {
           "name": "team_member_team_id_team_id_fk",
           "tableFrom": "team_member",
-          "columnsFrom": [
-            "team_id"
-          ],
+          "columnsFrom": ["team_id"],
           "tableTo": "team",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_member_season_id_season_id_fk": {
           "name": "team_member_season_id_season_id_fk",
           "tableFrom": "team_member",
-          "columnsFrom": [
-            "season_id"
-          ],
+          "columnsFrom": ["season_id"],
           "tableTo": "season",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_member_membership_id_membership_id_fk": {
           "name": "team_member_membership_id_membership_id_fk",
           "tableFrom": "team_member",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_member_approved_by_person_id_fk": {
           "name": "team_member_approved_by_person_id_fk",
           "tableFrom": "team_member",
-          "columnsFrom": [
-            "approved_by"
-          ],
+          "columnsFrom": ["approved_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2534,39 +2364,27 @@
         "team_staff_org_id_organization_id_fk": {
           "name": "team_staff_org_id_organization_id_fk",
           "tableFrom": "team_staff",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_staff_team_id_team_id_fk": {
           "name": "team_staff_team_id_team_id_fk",
           "tableFrom": "team_staff",
-          "columnsFrom": [
-            "team_id"
-          ],
+          "columnsFrom": ["team_id"],
           "tableTo": "team",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "team_staff_staff_role_id_staff_role_id_fk": {
           "name": "team_staff_staff_role_id_staff_role_id_fk",
           "tableFrom": "team_staff",
-          "columnsFrom": [
-            "staff_role_id"
-          ],
+          "columnsFrom": ["staff_role_id"],
           "tableTo": "staff_role",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -2574,10 +2392,7 @@
       "compositePrimaryKeys": {
         "team_staff_team_id_staff_role_id_pk": {
           "name": "team_staff_team_id_staff_role_id_pk",
-          "columns": [
-            "team_id",
-            "staff_role_id"
-          ]
+          "columns": ["team_id", "staff_role_id"]
         }
       },
       "uniqueConstraints": {},
@@ -2668,26 +2483,18 @@
         "access_token_org_id_organization_id_fk": {
           "name": "access_token_org_id_organization_id_fk",
           "tableFrom": "access_token",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "access_token_person_id_person_id_fk": {
           "name": "access_token_person_id_person_id_fk",
           "tableFrom": "access_token",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2802,52 +2609,36 @@
         "attendance_org_id_organization_id_fk": {
           "name": "attendance_org_id_organization_id_fk",
           "tableFrom": "attendance",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "attendance_event_id_event_id_fk": {
           "name": "attendance_event_id_event_id_fk",
           "tableFrom": "attendance",
-          "columnsFrom": [
-            "event_id"
-          ],
+          "columnsFrom": ["event_id"],
           "tableTo": "event",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "attendance_membership_id_membership_id_fk": {
           "name": "attendance_membership_id_membership_id_fk",
           "tableFrom": "attendance",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "attendance_recorded_by_person_id_fk": {
           "name": "attendance_recorded_by_person_id_fk",
           "tableFrom": "attendance",
-          "columnsFrom": [
-            "recorded_by"
-          ],
+          "columnsFrom": ["recorded_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2903,13 +2694,9 @@
         "attendance_op_org_id_organization_id_fk": {
           "name": "attendance_op_org_id_organization_id_fk",
           "tableFrom": "attendance_op",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -3098,52 +2885,36 @@
         "event_org_id_organization_id_fk": {
           "name": "event_org_id_organization_id_fk",
           "tableFrom": "event",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "event_team_id_team_id_fk": {
           "name": "event_team_id_team_id_fk",
           "tableFrom": "event",
-          "columnsFrom": [
-            "team_id"
-          ],
+          "columnsFrom": ["team_id"],
           "tableTo": "team",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "event_series_id_event_series_id_fk": {
           "name": "event_series_id_event_series_id_fk",
           "tableFrom": "event",
-          "columnsFrom": [
-            "series_id"
-          ],
+          "columnsFrom": ["series_id"],
           "tableTo": "event_series",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "set null"
         },
         "event_branch_id_branch_id_fk": {
           "name": "event_branch_id_branch_id_fk",
           "tableFrom": "event",
-          "columnsFrom": [
-            "branch_id"
-          ],
+          "columnsFrom": ["branch_id"],
           "tableTo": "branch",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3260,52 +3031,36 @@
         "event_series_org_id_organization_id_fk": {
           "name": "event_series_org_id_organization_id_fk",
           "tableFrom": "event_series",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "event_series_team_id_team_id_fk": {
           "name": "event_series_team_id_team_id_fk",
           "tableFrom": "event_series",
-          "columnsFrom": [
-            "team_id"
-          ],
+          "columnsFrom": ["team_id"],
           "tableTo": "team",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "event_series_branch_id_branch_id_fk": {
           "name": "event_series_branch_id_branch_id_fk",
           "tableFrom": "event_series",
-          "columnsFrom": [
-            "branch_id"
-          ],
+          "columnsFrom": ["branch_id"],
           "tableTo": "branch",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "event_series_created_by_person_id_fk": {
           "name": "event_series_created_by_person_id_fk",
           "tableFrom": "event_series",
-          "columnsFrom": [
-            "created_by"
-          ],
+          "columnsFrom": ["created_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3386,26 +3141,18 @@
         "holiday_org_id_organization_id_fk": {
           "name": "holiday_org_id_organization_id_fk",
           "tableFrom": "holiday",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "holiday_branch_id_branch_id_fk": {
           "name": "holiday_branch_id_branch_id_fk",
           "tableFrom": "holiday",
-          "columnsFrom": [
-            "branch_id"
-          ],
+          "columnsFrom": ["branch_id"],
           "tableTo": "branch",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -3486,26 +3233,18 @@
         "notification_log_org_id_organization_id_fk": {
           "name": "notification_log_org_id_organization_id_fk",
           "tableFrom": "notification_log",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "notification_log_recipient_person_id_person_id_fk": {
           "name": "notification_log_recipient_person_id_person_id_fk",
           "tableFrom": "notification_log",
-          "columnsFrom": [
-            "recipient_person_id"
-          ],
+          "columnsFrom": ["recipient_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3599,52 +3338,36 @@
         "rsvp_org_id_organization_id_fk": {
           "name": "rsvp_org_id_organization_id_fk",
           "tableFrom": "rsvp",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "rsvp_event_id_event_id_fk": {
           "name": "rsvp_event_id_event_id_fk",
           "tableFrom": "rsvp",
-          "columnsFrom": [
-            "event_id"
-          ],
+          "columnsFrom": ["event_id"],
           "tableTo": "event",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "rsvp_membership_id_membership_id_fk": {
           "name": "rsvp_membership_id_membership_id_fk",
           "tableFrom": "rsvp",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "rsvp_responded_by_person_id_fk": {
           "name": "rsvp_responded_by_person_id_fk",
           "tableFrom": "rsvp",
-          "columnsFrom": [
-            "responded_by"
-          ],
+          "columnsFrom": ["responded_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3757,26 +3480,18 @@
         "checkout_org_id_organization_id_fk": {
           "name": "checkout_org_id_organization_id_fk",
           "tableFrom": "checkout",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "checkout_guardian_person_id_person_id_fk": {
           "name": "checkout_guardian_person_id_person_id_fk",
           "tableFrom": "checkout",
-          "columnsFrom": [
-            "guardian_person_id"
-          ],
+          "columnsFrom": ["guardian_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3815,39 +3530,27 @@
         "checkout_invoice_org_id_organization_id_fk": {
           "name": "checkout_invoice_org_id_organization_id_fk",
           "tableFrom": "checkout_invoice",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "checkout_invoice_checkout_id_checkout_id_fk": {
           "name": "checkout_invoice_checkout_id_checkout_id_fk",
           "tableFrom": "checkout_invoice",
-          "columnsFrom": [
-            "checkout_id"
-          ],
+          "columnsFrom": ["checkout_id"],
           "tableTo": "checkout",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "checkout_invoice_invoice_id_invoice_id_fk": {
           "name": "checkout_invoice_invoice_id_invoice_id_fk",
           "tableFrom": "checkout_invoice",
-          "columnsFrom": [
-            "invoice_id"
-          ],
+          "columnsFrom": ["invoice_id"],
           "tableTo": "invoice",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3855,10 +3558,7 @@
       "compositePrimaryKeys": {
         "checkout_invoice_checkout_id_invoice_id_pk": {
           "name": "checkout_invoice_checkout_id_invoice_id_pk",
-          "columns": [
-            "checkout_id",
-            "invoice_id"
-          ]
+          "columns": ["checkout_id", "invoice_id"]
         }
       },
       "uniqueConstraints": {},
@@ -3964,26 +3664,18 @@
         "fee_plan_org_id_organization_id_fk": {
           "name": "fee_plan_org_id_organization_id_fk",
           "tableFrom": "fee_plan",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "fee_plan_team_id_team_id_fk": {
           "name": "fee_plan_team_id_team_id_fk",
           "tableFrom": "fee_plan",
-          "columnsFrom": [
-            "team_id"
-          ],
+          "columnsFrom": ["team_id"],
           "tableTo": "team",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "set null"
         }
@@ -4088,13 +3780,9 @@
         "gateway_event_org_id_organization_id_fk": {
           "name": "gateway_event_org_id_organization_id_fk",
           "tableFrom": "gateway_event",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -4300,52 +3988,36 @@
         "invoice_org_id_organization_id_fk": {
           "name": "invoice_org_id_organization_id_fk",
           "tableFrom": "invoice",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "invoice_membership_id_membership_id_fk": {
           "name": "invoice_membership_id_membership_id_fk",
           "tableFrom": "invoice",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "invoice_plan_id_fee_plan_id_fk": {
           "name": "invoice_plan_id_fee_plan_id_fk",
           "tableFrom": "invoice",
-          "columnsFrom": [
-            "plan_id"
-          ],
+          "columnsFrom": ["plan_id"],
           "tableTo": "fee_plan",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "invoice_created_by_person_id_fk": {
           "name": "invoice_created_by_person_id_fk",
           "tableFrom": "invoice",
-          "columnsFrom": [
-            "created_by"
-          ],
+          "columnsFrom": ["created_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4385,13 +4057,9 @@
         "invoice_counter_org_id_organization_id_fk": {
           "name": "invoice_counter_org_id_organization_id_fk",
           "tableFrom": "invoice_counter",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -4399,10 +4067,7 @@
       "compositePrimaryKeys": {
         "invoice_counter_org_id_period_pk": {
           "name": "invoice_counter_org_id_period_pk",
-          "columns": [
-            "org_id",
-            "period"
-          ]
+          "columns": ["org_id", "period"]
         }
       },
       "uniqueConstraints": {},
@@ -4520,65 +4185,45 @@
         "ledger_entry_org_id_organization_id_fk": {
           "name": "ledger_entry_org_id_organization_id_fk",
           "tableFrom": "ledger_entry",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "ledger_entry_invoice_id_invoice_id_fk": {
           "name": "ledger_entry_invoice_id_invoice_id_fk",
           "tableFrom": "ledger_entry",
-          "columnsFrom": [
-            "invoice_id"
-          ],
+          "columnsFrom": ["invoice_id"],
           "tableTo": "invoice",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "ledger_entry_payment_id_payment_id_fk": {
           "name": "ledger_entry_payment_id_payment_id_fk",
           "tableFrom": "ledger_entry",
-          "columnsFrom": [
-            "payment_id"
-          ],
+          "columnsFrom": ["payment_id"],
           "tableTo": "payment",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "ledger_entry_checkout_id_checkout_id_fk": {
           "name": "ledger_entry_checkout_id_checkout_id_fk",
           "tableFrom": "ledger_entry",
-          "columnsFrom": [
-            "checkout_id"
-          ],
+          "columnsFrom": ["checkout_id"],
           "tableTo": "checkout",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "ledger_entry_withdrawal_id_withdrawal_id_fk": {
           "name": "ledger_entry_withdrawal_id_withdrawal_id_fk",
           "tableFrom": "ledger_entry",
-          "columnsFrom": [
-            "withdrawal_id"
-          ],
+          "columnsFrom": ["withdrawal_id"],
           "tableTo": "withdrawal",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4704,65 +4349,45 @@
         "payment_org_id_organization_id_fk": {
           "name": "payment_org_id_organization_id_fk",
           "tableFrom": "payment",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "payment_invoice_id_invoice_id_fk": {
           "name": "payment_invoice_id_invoice_id_fk",
           "tableFrom": "payment",
-          "columnsFrom": [
-            "invoice_id"
-          ],
+          "columnsFrom": ["invoice_id"],
           "tableTo": "invoice",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_checkout_id_checkout_id_fk": {
           "name": "payment_checkout_id_checkout_id_fk",
           "tableFrom": "payment",
-          "columnsFrom": [
-            "checkout_id"
-          ],
+          "columnsFrom": ["checkout_id"],
           "tableTo": "checkout",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_recorded_by_person_id_fk": {
           "name": "payment_recorded_by_person_id_fk",
           "tableFrom": "payment",
-          "columnsFrom": [
-            "recorded_by"
-          ],
+          "columnsFrom": ["recorded_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_proof_document_id_document_id_fk": {
           "name": "payment_proof_document_id_document_id_fk",
           "tableFrom": "payment",
-          "columnsFrom": [
-            "proof_document_id"
-          ],
+          "columnsFrom": ["proof_document_id"],
           "tableTo": "document",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4868,26 +4493,18 @@
         "payment_attempt_org_id_organization_id_fk": {
           "name": "payment_attempt_org_id_organization_id_fk",
           "tableFrom": "payment_attempt",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "payment_attempt_checkout_id_checkout_id_fk": {
           "name": "payment_attempt_checkout_id_checkout_id_fk",
           "tableFrom": "payment_attempt",
-          "columnsFrom": [
-            "checkout_id"
-          ],
+          "columnsFrom": ["checkout_id"],
           "tableTo": "checkout",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -5006,39 +4623,27 @@
         "withdrawal_org_id_organization_id_fk": {
           "name": "withdrawal_org_id_organization_id_fk",
           "tableFrom": "withdrawal",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "withdrawal_bank_account_id_bank_account_id_fk": {
           "name": "withdrawal_bank_account_id_bank_account_id_fk",
           "tableFrom": "withdrawal",
-          "columnsFrom": [
-            "bank_account_id"
-          ],
+          "columnsFrom": ["bank_account_id"],
           "tableTo": "bank_account",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "withdrawal_requested_by_person_id_fk": {
           "name": "withdrawal_requested_by_person_id_fk",
           "tableFrom": "withdrawal",
-          "columnsFrom": [
-            "requested_by"
-          ],
+          "columnsFrom": ["requested_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5192,39 +4797,27 @@
         "announcement_org_id_organization_id_fk": {
           "name": "announcement_org_id_organization_id_fk",
           "tableFrom": "announcement",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "announcement_author_person_id_person_id_fk": {
           "name": "announcement_author_person_id_person_id_fk",
           "tableFrom": "announcement",
-          "columnsFrom": [
-            "author_person_id"
-          ],
+          "columnsFrom": ["author_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "announcement_event_id_event_id_fk": {
           "name": "announcement_event_id_event_id_fk",
           "tableFrom": "announcement",
-          "columnsFrom": [
-            "event_id"
-          ],
+          "columnsFrom": ["event_id"],
           "tableTo": "event",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "set null"
         }
@@ -5331,39 +4924,27 @@
         "announcement_recipient_org_id_organization_id_fk": {
           "name": "announcement_recipient_org_id_organization_id_fk",
           "tableFrom": "announcement_recipient",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "announcement_recipient_announcement_id_announcement_id_fk": {
           "name": "announcement_recipient_announcement_id_announcement_id_fk",
           "tableFrom": "announcement_recipient",
-          "columnsFrom": [
-            "announcement_id"
-          ],
+          "columnsFrom": ["announcement_id"],
           "tableTo": "announcement",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "announcement_recipient_person_id_person_id_fk": {
           "name": "announcement_recipient_person_id_person_id_fk",
           "tableFrom": "announcement_recipient",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5481,65 +5062,45 @@
         "assessment_org_id_organization_id_fk": {
           "name": "assessment_org_id_organization_id_fk",
           "tableFrom": "assessment",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "assessment_membership_id_membership_id_fk": {
           "name": "assessment_membership_id_membership_id_fk",
           "tableFrom": "assessment",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "assessment_season_id_season_id_fk": {
           "name": "assessment_season_id_season_id_fk",
           "tableFrom": "assessment",
-          "columnsFrom": [
-            "season_id"
-          ],
+          "columnsFrom": ["season_id"],
           "tableTo": "season",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "assessment_skill_id_skill_id_fk": {
           "name": "assessment_skill_id_skill_id_fk",
           "tableFrom": "assessment",
-          "columnsFrom": [
-            "skill_id"
-          ],
+          "columnsFrom": ["skill_id"],
           "tableTo": "skill",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "assessment_assessed_by_person_id_fk": {
           "name": "assessment_assessed_by_person_id_fk",
           "tableFrom": "assessment",
-          "columnsFrom": [
-            "assessed_by"
-          ],
+          "columnsFrom": ["assessed_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5654,52 +5215,36 @@
         "assessment_note_org_id_organization_id_fk": {
           "name": "assessment_note_org_id_organization_id_fk",
           "tableFrom": "assessment_note",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "assessment_note_membership_id_membership_id_fk": {
           "name": "assessment_note_membership_id_membership_id_fk",
           "tableFrom": "assessment_note",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "assessment_note_season_id_season_id_fk": {
           "name": "assessment_note_season_id_season_id_fk",
           "tableFrom": "assessment_note",
-          "columnsFrom": [
-            "season_id"
-          ],
+          "columnsFrom": ["season_id"],
           "tableTo": "season",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "assessment_note_author_person_id_person_id_fk": {
           "name": "assessment_note_author_person_id_person_id_fk",
           "tableFrom": "assessment_note",
-          "columnsFrom": [
-            "author_person_id"
-          ],
+          "columnsFrom": ["author_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5806,52 +5351,36 @@
         "data_request_org_id_organization_id_fk": {
           "name": "data_request_org_id_organization_id_fk",
           "tableFrom": "data_request",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "data_request_requester_person_id_person_id_fk": {
           "name": "data_request_requester_person_id_person_id_fk",
           "tableFrom": "data_request",
-          "columnsFrom": [
-            "requester_person_id"
-          ],
+          "columnsFrom": ["requester_person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "data_request_membership_id_membership_id_fk": {
           "name": "data_request_membership_id_membership_id_fk",
           "tableFrom": "data_request",
-          "columnsFrom": [
-            "membership_id"
-          ],
+          "columnsFrom": ["membership_id"],
           "tableTo": "membership",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "data_request_handled_by_person_id_fk": {
           "name": "data_request_handled_by_person_id_fk",
           "tableFrom": "data_request",
-          "columnsFrom": [
-            "handled_by"
-          ],
+          "columnsFrom": ["handled_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5953,13 +5482,9 @@
         "push_subscription_person_id_person_id_fk": {
           "name": "push_subscription_person_id_person_id_fk",
           "tableFrom": "push_subscription",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -6046,39 +5571,27 @@
         "report_publication_org_id_organization_id_fk": {
           "name": "report_publication_org_id_organization_id_fk",
           "tableFrom": "report_publication",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "report_publication_season_id_season_id_fk": {
           "name": "report_publication_season_id_season_id_fk",
           "tableFrom": "report_publication",
-          "columnsFrom": [
-            "season_id"
-          ],
+          "columnsFrom": ["season_id"],
           "tableTo": "season",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "report_publication_published_by_person_id_fk": {
           "name": "report_publication_published_by_person_id_fk",
           "tableFrom": "report_publication",
-          "columnsFrom": [
-            "published_by"
-          ],
+          "columnsFrom": ["published_by"],
           "tableTo": "person",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -6180,13 +5693,9 @@
         "skill_org_id_organization_id_fk": {
           "name": "skill_org_id_organization_id_fk",
           "tableFrom": "skill",
-          "columnsFrom": [
-            "org_id"
-          ],
+          "columnsFrom": ["org_id"],
           "tableTo": "organization",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -6202,288 +5711,157 @@
     "public.announcement_source": {
       "name": "announcement_source",
       "schema": "public",
-      "values": [
-        "manual",
-        "schedule_change"
-      ]
+      "values": ["manual", "schedule_change"]
     },
     "public.announcement_status": {
       "name": "announcement_status",
       "schema": "public",
-      "values": [
-        "scheduled",
-        "sent",
-        "cancelled"
-      ]
+      "values": ["scheduled", "sent", "cancelled"]
     },
     "public.announcement_target": {
       "name": "announcement_target",
       "schema": "public",
-      "values": [
-        "club",
-        "branch",
-        "ku",
-        "team"
-      ]
+      "values": ["club", "branch", "ku", "team"]
     },
     "public.attendance_status": {
       "name": "attendance_status",
       "schema": "public",
-      "values": [
-        "hadir",
-        "izin",
-        "sakit",
-        "alpa"
-      ]
+      "values": ["hadir", "izin", "sakit", "alpa"]
     },
     "public.bank_account_status": {
       "name": "bank_account_status",
       "schema": "public",
-      "values": [
-        "pending_verification",
-        "verified",
-        "rejected",
-        "replaced"
-      ]
+      "values": ["pending_verification", "verified", "rejected", "replaced"]
     },
     "public.checkout_status": {
       "name": "checkout_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "paid",
-        "expired",
-        "failed"
-      ]
+      "values": ["pending", "paid", "expired", "failed"]
     },
     "public.data_request_status": {
       "name": "data_request_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "done",
-        "rejected"
-      ]
+      "values": ["pending", "done", "rejected"]
     },
     "public.document_kind": {
       "name": "document_kind",
       "schema": "public",
-      "values": [
-        "akta",
-        "kia",
-        "kk",
-        "foto",
-        "bukti_bayar"
-      ]
+      "values": ["akta", "kia", "kk", "foto", "bukti_bayar"]
     },
     "public.document_status": {
       "name": "document_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "verified",
-        "rejected"
-      ]
+      "values": ["pending", "verified", "rejected"]
     },
     "public.event_kind": {
       "name": "event_kind",
       "schema": "public",
-      "values": [
-        "training",
-        "match",
-        "tournament",
-        "assessment",
-        "other"
-      ]
+      "values": ["training", "match", "tournament", "assessment", "other"]
     },
     "public.event_status": {
       "name": "event_status",
       "schema": "public",
-      "values": [
-        "scheduled",
-        "cancelled"
-      ]
+      "values": ["scheduled", "cancelled"]
     },
     "public.fee_plan_kind": {
       "name": "fee_plan_kind",
       "schema": "public",
-      "values": [
-        "monthly",
-        "registration"
-      ]
+      "values": ["monthly", "registration"]
     },
     "public.gender": {
       "name": "gender",
       "schema": "public",
-      "values": [
-        "male",
-        "female"
-      ]
+      "values": ["male", "female"]
     },
     "public.guardian_relation": {
       "name": "guardian_relation",
       "schema": "public",
-      "values": [
-        "father",
-        "mother",
-        "guardian"
-      ]
+      "values": ["father", "mother", "guardian"]
     },
     "public.invoice_kind": {
       "name": "invoice_kind",
       "schema": "public",
-      "values": [
-        "recurring",
-        "registration",
-        "one_time"
-      ]
+      "values": ["recurring", "registration", "one_time"]
     },
     "public.invoice_status": {
       "name": "invoice_status",
       "schema": "public",
-      "values": [
-        "unpaid",
-        "paid",
-        "waived",
-        "void"
-      ]
+      "values": ["unpaid", "paid", "waived", "void"]
     },
     "public.ku_rule": {
       "name": "ku_rule",
       "schema": "public",
-      "values": [
-        "UNDER_N",
-        "MAX_N"
-      ]
+      "values": ["UNDER_N", "MAX_N"]
     },
     "public.ledger_kind": {
       "name": "ledger_kind",
       "schema": "public",
-      "values": [
-        "club_gross",
-        "platform_fee",
-        "midtrans_fee",
-        "withdrawal",
-        "refund"
-      ]
+      "values": ["club_gross", "platform_fee", "midtrans_fee", "withdrawal", "refund"]
     },
     "public.membership_status": {
       "name": "membership_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "rejected",
-        "active",
-        "on_leave",
-        "left"
-      ]
+      "values": ["pending", "rejected", "active", "on_leave", "left"]
     },
     "public.otp_channel": {
       "name": "otp_channel",
       "schema": "public",
-      "values": [
-        "whatsapp",
-        "sms"
-      ]
+      "values": ["whatsapp", "sms"]
     },
     "public.otp_purpose": {
       "name": "otp_purpose",
       "schema": "public",
-      "values": [
-        "login",
-        "signup"
-      ]
+      "values": ["login", "signup"]
     },
     "public.placement": {
       "name": "placement",
       "schema": "public",
-      "values": [
-        "same",
-        "play_up",
-        "play_down",
-        "over_age"
-      ]
+      "values": ["same", "play_up", "play_down", "over_age"]
     },
     "public.registration_source": {
       "name": "registration_source",
       "schema": "public",
-      "values": [
-        "online",
-        "import",
-        "manual"
-      ]
+      "values": ["online", "import", "manual"]
     },
     "public.rsvp_status": {
       "name": "rsvp_status",
       "schema": "public",
-      "values": [
-        "hadir",
-        "izin",
-        "sakit"
-      ]
+      "values": ["hadir", "izin", "sakit"]
     },
     "public.season_status": {
       "name": "season_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "active",
-        "archived"
-      ]
+      "values": ["draft", "active", "archived"]
     },
     "public.sport": {
       "name": "sport",
       "schema": "public",
-      "values": [
-        "basketball"
-      ]
+      "values": ["basketball"]
     },
     "public.staff_role_kind": {
       "name": "staff_role_kind",
       "schema": "public",
-      "values": [
-        "owner",
-        "admin",
-        "coach",
-        "team_manager"
-      ]
+      "values": ["owner", "admin", "coach", "team_manager"]
     },
     "public.staff_status": {
       "name": "staff_status",
       "schema": "public",
-      "values": [
-        "invited",
-        "active",
-        "removed"
-      ]
+      "values": ["invited", "active", "removed"]
     },
     "public.subscription_plan": {
       "name": "subscription_plan",
       "schema": "public",
-      "values": [
-        "starter",
-        "klub",
-        "akademi",
-        "enterprise"
-      ]
+      "values": ["starter", "klub", "akademi", "enterprise"]
     },
     "public.team_gender": {
       "name": "team_gender",
       "schema": "public",
-      "values": [
-        "male",
-        "female",
-        "mixed"
-      ]
+      "values": ["male", "female", "mixed"]
     },
     "public.withdrawal_status": {
       "name": "withdrawal_status",
       "schema": "public",
-      "values": [
-        "processing",
-        "completed",
-        "failed"
-      ]
+      "values": ["processing", "completed", "failed"]
     }
   },
   "schemas": {},
