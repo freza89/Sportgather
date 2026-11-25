@@ -173,3 +173,33 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 - `guardian_link` hanya terbaca oleh walinya sendiri atau oleh klub tempat anaknya terdaftar.
 - `person` boleh di-insert tanpa batas (pendaftaran/impor), tetapi id-nya wajib dibuat aplikasi karena `RETURNING` tunduk pada policy baca.
 - `user_account` belum diberi RLS: tabel ini dipakai alur login sebelum ada konteks, dan hanya berisi nomor/email.
+
+## ADR-019 · Dokumen usia: enkripsi aplikasi + dibuka lewat API
+**Status:** Diterima (M2)
+**Konteks:** PRD bagian 13 menyebut enkripsi server-side dan signed URL berumur pendek.
+**Keputusan:**
+- **Enkripsi:** file dienkripsi di aplikasi (AES-256-GCM, kunci `DOCUMENT_ENCRYPTION_KEY`) sebelum disimpan di object storage. Isi bucket tidak terbaca tanpa kunci aplikasi, siapa pun penyedia storage-nya.
+- **Akses:** dokumen dibuka lewat endpoint API (`/documents/:id/content`, hanya owner/admin), yang mendekripsi isi dan mencatat `document.viewed` di audit log setiap kali dibuka. Tidak ada URL publik, termasuk signed URL. Respons diberi `Cache-Control: no-store`.
+- **Validasi:** tipe file dideteksi dari isi (magic bytes JPG/PNG/PDF), bukan dari nama file; ukuran maks. 5 MB.
+**Konsekuensi:** Rotasi kunci butuh re-enkripsi (dibuat sebelum produksi). Lalu lintas unduhan dokumen lewat API, tetapi volumenya kecil (hanya admin).
+
+## ADR-020 · Alur pendaftaran online & verifikasi
+**Status:** Diterima (M2)
+**Keputusan:**
+- Wali memverifikasi nomor WhatsApp lewat OTP di langkah 2 formulir. Akun dibuat otomatis, tanpa install aplikasi (US-03).
+- Persetujuan pemrosesan data dicatat per anak: wali, waktu, IP, dan versi teks (`CONSENT_VERSION`).
+- Pendaftar berstatus `pending`. Bila ditolak, statusnya menjadi `rejected` dengan alasan, dan wali mendapat WhatsApp. Wali bisa mengunggah ulang dari portal, lalu statusnya kembali `pending`.
+- Anak yang sudah terhubung ke wali yang sama (mis. terdaftar di klub lain) dipakai ulang sebagai `person`, sehingga riwayat lintas klub terjaga (PRD bagian 7).
+- Pemain hasil impor/tambah manual langsung `active` dengan status dokumen "Belum ada".
+
+---
+
+## Selisih desain (tambahan M2)
+
+| # | Topik | Desain | Implementasi |
+| --- | --- | --- | --- |
+| D-15 | A-08 "Cocokkan data" | Kolom "Dokumen" terisi otomatis | Sistem tidak membaca isi akta (tanpa OCR). Admin mencentang kecocokan nama, tanggal lahir, dan gender, dan tombol verifikasi baru aktif setelah ketiganya dicentang |
+| D-16 | Link/QR pendaftaran | QR disebut di PRD (REG-01) | Link + tombol salin di A-08. QR menyusul |
+| D-17 | A-06 kolom "Iuran Okt" | Status iuran | Diganti kolom "Status" keanggotaan sampai modul iuran (M4) |
+| D-18 | A-09/A-10 jadwal & kehadiran | Ditampilkan di kartu tim | Menyusul di M3 |
+| D-19 | O-01 urutan langkah | Langkah 1 data anak + persetujuan, langkah 2 data wali | Sama, ditambah verifikasi OTP WhatsApp wali di langkah 2 dan langkah 3 "Tinjau & kirim" |

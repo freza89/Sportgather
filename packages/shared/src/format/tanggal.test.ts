@@ -39,3 +39,12 @@ describe('format tanggal Indonesia', () => {
     expect(formatTanggal(malam)).toBe('1 Jan 2028');
   });
 });
+
+describe('formatTanggalIso', () => {
+  it('format tanggal kalender ISO', async () => {
+    const { formatTanggalIso } = await import('./tanggal.js');
+    expect(formatTanggalIso('2015-03-12')).toBe('12 Mar 2015');
+    expect(formatTanggalIso('2015-03-12', true)).toBe('12 Maret 2015');
+    expect(formatTanggalIso(null)).toBe('—');
+  });
+});
