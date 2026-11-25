@@ -1,6 +1,6 @@
 # SportGather — Rencana Implementasi MVP
 
-> Status: **Disetujui dengan revisi (24 Nov 2026)**: lihat bagian 8 untuk jawaban pertanyaan. Belum ada kode yang ditulis.
+> Status: **Disetujui dengan revisi (24 Nov 2026)** · M0 selesai · M1 selesai, menunggu review. Jawaban pertanyaan ada di bagian 8.
 > Sumber: `docs/PRD.md` (23 Nov 2026) dan Figma `vwWLfX9ncQFJK9g94jlAdl` (31 layar + user flow).
 > Selisih PRD ↔ desain dicatat di `docs/decisions.md`.
 
@@ -237,13 +237,8 @@ Perkiraan urutan risiko: tes isolasi RLS (M1) dan webhook idempoten (M4) adalah 
 
 ### Masih terbuka
 
-13. **★ Model penarikan dana (M4).** "Owner menarik uangnya" berarti dana klub ditampung dulu sebagai saldo, lalu ditarik owner ke rekening klub. Ini adalah skema **cadangan (Iris)** di PRD, bukan Split. Dengan Split, dana langsung dibagi Midtrans saat settlement sehingga tidak ada momen "menarik". **Usulan:**
-    - Saldo klub per org di ledger.
-    - Owner menekan "Tarik dana" (ada minimal penarikan) → Iris → biaya transfer dipotong.
-    - Saldo yang ditarik hanya dana yang sudah settle dari Midtrans.
-
-    Konsekuensinya: risiko izin BI (PRD bagian 12) jadi relevan dan perlu penilaian konsultan hukum sebelum dibuka ke banyak klub. Mohon konfirmasi: **penarikan manual oleh owner**, atau **penyaluran otomatis terjadwal** dengan biaya dipotong per penyaluran?
-14. **Biaya layanan untuk QRIS.** Aturan QRIS Bank Indonesia setahu saya **melarang merchant membebankan MDR QRIS kepada pembeli**. Perlu dicek ke Midtrans/legal. **Usulan aman:** biaya layanan dibebankan ke wali untuk VA dan e-wallet. Untuk QRIS, biayanya ditanggung klub (dipotong dari saldo), atau QRIS dikenai "biaya platform" flat yang bukan MDR. Mohon pilih setelah dicek.
+13. ~~Model penarikan dana~~ → **diputuskan 24 Nov 2026: penarikan manual oleh owner kapan saja.** Lihat ADR-016.
+14. **Biaya layanan QRIS** → sedang dicek ke Midtrans oleh tim. Sambil menunggu, biaya layanan dibuat bisa dikonfigurasi per metode bayar, dan untuk QRIS bisa dimatikan tanpa ubah kode. Lihat ADR-016.
 6. **Login staf.** Usulan: OTP WhatsApp untuk semua peran, plus email + password + 2FA opsional untuk owner/admin.
 7. **Jadwal cair di skema Split.** Terjawab oleh Q13 bila memakai model penarikan.
 8. **Akun pemain KU13+.** Usulan: tidak dibuat di MVP.
@@ -252,7 +247,7 @@ Perkiraan urutan risiko: tes isolasi RLS (M1) dan webhook idempoten (M4) adalah 
 11. **Penomoran tagihan.** Usulan: `INV-{YYMM}-{urut 4 digit per org per bulan}`.
 12. **Hosting/CI.** Usulan: GitHub Actions; cloud region Jakarta dipilih di M6.
 
-Pertanyaan yang ★ hanya menghalangi M4. M0–M3 bisa berjalan.
+Tidak ada pertanyaan yang menghalangi milestone. Jawaban Midtrans soal QRIS dibutuhkan sebelum pilot memakai pembayaran sungguhan.
 
 ---
 

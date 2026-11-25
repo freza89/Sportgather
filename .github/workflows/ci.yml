@@ -11,9 +11,25 @@ concurrency:
 
 jobs:
   check:
-    name: Lint, typecheck, test, build
+    name: Lint, typecheck, test, build, e2e
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: sportgather
+          POSTGRES_PASSWORD: sportgather
+          POSTGRES_DB: sportgather
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U sportgather"
+          --health-interval 5s
+          --health-retries 10
+    env:
+      # Tes membuat database sementara sendiri (sg_test_*) dan e2e memakai sportgather_e2e.
+      DATABASE_ADMIN_URL: postgres://sportgather:sportgather@localhost:55432/sportgather
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -25,11 +41,12 @@ jobs:
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm test
+      - name: Unit & integrasi (termasuk tes isolasi tenant RLS)
+        run: pnpm test
       - run: pnpm build
       - name: Install Playwright Chromium
         run: pnpm --filter @sportgather/e2e exec playwright install --with-deps chromium
-      - name: Smoke test e2e
+      - name: E2E
         run: pnpm --filter @sportgather/e2e e2e
       - uses: actions/upload-artifact@v4
         if: failure()
