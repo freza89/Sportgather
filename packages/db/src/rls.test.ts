@@ -3,6 +3,16 @@ import { eq, sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   accessToken,
+  checkout,
+  checkoutInvoice,
+  feePlan,
+  gatewayEvent,
+  invoice,
+  invoiceCounter,
+  ledgerEntry,
+  payment,
+  paymentAttempt,
+  withdrawal,
   attendance,
   attendanceOp,
   auditLog,
@@ -194,6 +204,98 @@ describe('isolasi tenant (RLS)', () => {
       await db
         .insert(notificationLog)
         .values({ orgId: org, dedupeKey: `k-${slug}`, template: 'pengingat_sesi' });
+      // Tabel M4: iuran, checkout, pembayaran, ledger, penarikan.
+      const [plan] = await db
+        .insert(feePlan)
+        .values({ orgId: org, name: 'Iuran', kind: 'monthly', amount: 350_000 })
+        .returning();
+      await db.insert(invoiceCounter).values({ orgId: org, period: '2027-10', last: 1 });
+      const [inv] = await db
+        .insert(invoice)
+        .values({
+          orgId: org,
+          number: 'INV-2710-0001',
+          membershipId: m!.id,
+          planId: plan!.id,
+          kind: 'recurring',
+          period: '2027-10',
+          description: 'Iuran',
+          amount: 350_000,
+          total: 350_000,
+          issueDate: '2027-10-01',
+          dueDate: '2027-10-10',
+        })
+        .returning();
+      const [co] = await db
+        .insert(checkout)
+        .values({
+          orgId: org,
+          guardianPersonId: owner,
+          method: 'qris',
+          base: 350_000,
+          serviceFee: 0,
+          gross: 350_000,
+          platformFee: 2_500,
+        })
+        .returning();
+      await db
+        .insert(checkoutInvoice)
+        .values({ orgId: org, checkoutId: co!.id, invoiceId: inv!.id });
+      await db.insert(paymentAttempt).values({
+        orgId: org,
+        checkoutId: co!.id,
+        orderId: `order-${slug}`,
+        method: 'qris',
+        gross: 350_000,
+      });
+      await db.insert(gatewayEvent).values({
+        orgId: org,
+        orderId: `order-${slug}`,
+        transactionStatus: 'settlement',
+        statusCode: '200',
+        grossAmount: '350000.00',
+        payload: {},
+      });
+      const [pay] = await db
+        .insert(payment)
+        .values({
+          orgId: org,
+          invoiceId: inv!.id,
+          checkoutId: co!.id,
+          method: 'qris',
+          amount: 350_000,
+          paidAt: new Date(),
+        })
+        .returning();
+      const [bank] = await db.select().from(bankAccount).where(eq(bankAccount.orgId, org));
+      const [wd] = await db
+        .insert(withdrawal)
+        .values({
+          orgId: org,
+          amount: 100_000,
+          fee: 2_500,
+          net: 97_500,
+          bankAccountId: bank!.id,
+          requestedBy: owner,
+        })
+        .returning();
+      await db.insert(ledgerEntry).values([
+        {
+          orgId: org,
+          kind: 'club_gross',
+          amount: 350_000,
+          invoiceId: inv!.id,
+          paymentId: pay!.id,
+          availableAt: new Date(),
+        },
+        {
+          orgId: org,
+          kind: 'withdrawal',
+          amount: -100_000,
+          withdrawalId: wd!.id,
+          availableAt: new Date(),
+        },
+      ]);
       await db.insert(document).values({
         orgId: org,
         personId: child,
@@ -346,6 +448,17 @@ describe('isolasi tenant (RLS)', () => {
     expect(deleted).toEqual([]);
     const [still] = await t.admin.db.select().from(branch).where(eq(branch.orgId, B));
     expect(still?.name).toBe('GOR');
+  });
+
+  it('ledger dana klub append-only bagi aplikasi', async () => {
+    await expectPgError(
+      withTenant(t.db, A, undefined, (tx) => tx.update(ledgerEntry).set({ amount: 1 })),
+      /permission denied/,
+    );
+    await expectPgError(
+      withTenant(t.db, A, undefined, (tx) => tx.delete(ledgerEntry)),
+      /permission denied/,
+    );
   });
 
   it('audit log append-only bagi aplikasi', async () => {

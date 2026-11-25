@@ -144,7 +144,7 @@ export interface PlayerListResponse {
 
 export interface DocumentDto {
   id: string;
-  kind: 'akta' | 'kia' | 'kk' | 'foto';
+  kind: 'akta' | 'kia' | 'kk' | 'foto' | 'bukti_bayar';
   fileName: string;
   mimeType: string;
   status: 'pending' | 'verified' | 'rejected';
@@ -157,6 +157,7 @@ export const DOCUMENT_KIND_LABEL = {
   kia: 'KIA',
   kk: 'Kartu keluarga',
   foto: 'Foto pemain',
+  bukti_bayar: 'Bukti bayar',
 } as const;
 
 export interface PlayerDetail {

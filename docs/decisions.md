@@ -244,3 +244,40 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 | D-21 | A-12 filter "Semua cabang" | Dropdown cabang | Filter tim (cabang bisa difilter lewat API, UI menyusul) |
 | D-22 | A-09 kehadiran 30 hari di kartu tim | Ditampilkan | Tersedia di P-03 (pelatih). Kartu admin & dashboard menyusul (M5) |
 | D-23 | P-02 chip ringkasan | Chip "Hadir" disorot | Sama, dihitung langsung dari isian layar |
+
+---
+
+## ADR-024 · Pembayaran Midtrans: checkout, webhook, dan ledger
+**Status:** Diterima (M4)
+**Keputusan:**
+- **Checkout:** satu checkout = satu `order_id` Midtrans (`SG-<checkoutId>-<percobaan>`) untuk 1..n tagihan dari satu klub (ADR-003). Snap dibatasi ke metode yang dipilih wali, dan biaya layanannya masuk sebagai item terpisah.
+- **Sumber kebenaran status:** status bayar tidak pernah diambil dari isi notifikasi. Webhook memverifikasi `signature_key`, menyimpan event mentah (`gateway_event`, dedupe per order+status), lalu mengecek ulang lewat Status API. Halaman "selesai bayar" juga mengecek ulang, sehingga pembayaran tercatat walau webhook tidak sampai (mis. lokal).
+- **Idempoten:** penerapan settlement mengunci baris checkout (`FOR UPDATE`); notifikasi ganda atau bersamaan hanya diproses sekali. Nominal yang tidak cocok tidak diterapkan dan dicatat di audit.
+- **Tagihan yang ternyata sudah lunas** (mis. dicatat manual saat wali sedang bayar online): dana tetap masuk ledger klub dan dicatat di audit (`doublePaid`) untuk dikembalikan manual.
+- **Ledger** append-only per tagihan: `club_gross` +total, `platform_fee` −bagian fee, `midtrans_fee` −bagian biaya Midtrans yang ditanggung klub (QRIS saat biaya layanannya dimatikan). Pembagian memakai sisa terbesar, jadi setiap rupiah bisa ditelusuri ke tagihannya (US-13). Pembayaran manual tidak masuk ledger.
+- **Penarikan:** dikunci per klub (advisory lock). Saldo dicadangkan dulu lewat entri ledger negatif, lalu Iris dipanggil. Bila gagal, dibuat entri balik. Rekening belum terverifikasi berarti dana ditahan (FEE-07).
+- **Rekonsiliasi berkala:** job (tiap 15 menit, `JOBS_ENABLED`) mengecek ulang checkout pending berumur 5 menit s.d. 2 hari ke Status API. Jaring pengaman bila webhook tidak sampai/ditolak dan wali tidak kembali ke halaman status.
+- **`PAYOUT_PROVIDER` terpisah dari `PAYMENT_PROVIDER`**, sehingga Snap sandbox bisa dipakai sebelum akses Iris tersedia.
+
+## ADR-025 · Penerbitan tagihan
+**Status:** Diterima (M4)
+**Keputusan:**
+- **Paket bulanan:** paket ber-KU spesifik didahulukan dari paket "semua KU". KU paket aktif tidak boleh tumpang-tindih, sehingga satu pemain punya satu paket.
+- **KU pemain** = KU tim aktifnya musim ini. Tanpa tim, KU dihitung dari tanggal lahir.
+- **Idempoten:** unique index (pemain, paket, periode). Proses yang berjalan bersamaan tidak menggandakan tagihan.
+- **Terbit terlambat** (paket baru dibuat di tengah bulan, atau terbit manual setelah tanggal terbit): tanggal terbit = hari ini dan jatuh tempo dihitung dari situ, sehingga tagihan tidak langsung terlambat.
+- **Pemain cuti dilewati.** Beasiswa 100% menghasilkan tagihan Rp0 berstatus "dibebaskan".
+- **Nomor tagihan** `INV-YYMM-NNNN` per klub per bulan, dari counter atomik.
+
+---
+
+## Selisih desain (tambahan M4)
+
+| # | Topik | Desain | Implementasi |
+| --- | --- | --- | --- |
+| D-24 | A-13 "Diskon Saudara" | Kartu diskon saudara 10% | Dihapus dari MVP (keputusan Q4). Tab "Diskon & beasiswa" menjadi "Beasiswa" |
+| D-25 | A-14 "Kirim pengingat" | Tombol manual | Pengingat otomatis H-3/H/H+3/H+7. Tombol kepala diganti "Terbitkan iuran" dan "Biaya lain" |
+| D-26 | A-15 skema | "Midtrans Transaction Split", jadwal cair otomatis | Penarikan manual oleh owner (ADR-016): kartu saldo + tombol "Tarik dana", riwayat penarikan, dan daftar pembayaran masuk yang bisa ditelusuri per tagihan |
+| D-27 | A-15 "Unduh laporan" | Tombol ekspor | Menyusul bersama laporan (M5, A-18) |
+| D-28 | O-05 rincian | Tanpa biaya layanan | Biaya layanan per metode ditampilkan (keputusan Q5); QRIS gratis selama ADR-016 |
+| D-29 | Kuitansi | Tidak didesain | PDF A5 sederhana (logo klub menyusul) |

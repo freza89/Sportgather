@@ -1,4 +1,5 @@
 import { type DynamicModule, Module } from '@nestjs/common';
+import { BillingModule } from './billing/billing.controller.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ENV, type Env } from './config/env.js';
 import { DbModule } from './db/db.module.js';
@@ -30,6 +31,7 @@ export class AppModule {
         TeamsModule,
         PlayersModule,
         ScheduleModule,
+        BillingModule,
         MeModule,
         ...(devTools ? [DevModule] : []),
       ],

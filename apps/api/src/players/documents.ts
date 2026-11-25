@@ -66,7 +66,7 @@ export function toDocumentDto(d: typeof document.$inferSelect): DocumentDto {
 export function docStatusOf(
   docs: { kind: string; status: string }[],
 ): 'verified' | 'pending' | 'rejected' | 'missing' {
-  const age = docs.filter((d) => d.kind !== 'foto');
+  const age = docs.filter((d) => d.kind === 'akta' || d.kind === 'kia' || d.kind === 'kk');
   if (age.some((d) => d.status === 'verified')) return 'verified';
   if (age.some((d) => d.status === 'pending')) return 'pending';
   if (age.some((d) => d.status === 'rejected')) return 'rejected';
