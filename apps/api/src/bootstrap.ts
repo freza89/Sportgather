@@ -15,6 +15,9 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
     {
       logger:
         env.NODE_ENV === 'test' && !process.env.SG_TEST_LOG ? false : ['log', 'warn', 'error'],
+      // Gagal start (mis. storage tidak terjangkau) dilempar sebagai error, bukan process.abort(),
+      // agar pesan jelas dan proses tes tidak ikut mati.
+      abortOnError: false,
     },
   );
   await app.register(helmet, { contentSecurityPolicy: env.NODE_ENV === 'production' });

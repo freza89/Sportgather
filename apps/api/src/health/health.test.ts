@@ -26,7 +26,9 @@ describe('GET /health', () => {
   });
 
   it('menolak start bila terhubung sebagai superuser (RLS tidak berlaku)', async () => {
-    const app = await createApp(loadEnv({ NODE_ENV: 'test', DATABASE_URL: h.db.adminUrl }));
+    const app = await createApp(
+      loadEnv({ NODE_ENV: 'test', DATABASE_URL: h.db.adminUrl, STORAGE_PROVIDER: 'memory' }),
+    );
     await expect(app.init()).rejects.toThrow(/melewati RLS/);
     await app.close().catch(() => undefined);
   });
