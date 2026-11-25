@@ -5,6 +5,8 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import {
+  assessment,
+  assessmentNote,
   attendance,
   consent,
   dataRequest,
@@ -13,8 +15,10 @@ import {
   invoice,
   membership,
   organization,
+  payment,
   person,
   pushSubscription,
+  rsvp,
   team,
   teamMember,
   userAccount,
@@ -368,9 +372,11 @@ export class GuardianService {
   }
 
   /**
-   * Selesaikan permintaan. "done": keanggotaan dinonaktifkan, data kontak dihapus, dan dokumen
-   * usia dihapus dari storage. Catatan keuangan & absensi disimpan untuk kewajiban pembukuan
-   * (ADR-029).
+   * Selesaikan permintaan (ADR-029). "done" menghapus data anak di klub ini: dokumen (termasuk
+   * bukti bayar), absensi, RSVP, penilaian & catatan, riwayat tim, persetujuan, data kontak;
+   * tagihan belum lunas dibatalkan. Tagihan lunas & pembayaran disimpan tanpa identitas untuk
+   * pembukuan. Bila anak tidak terdaftar di klub lain, nama/tanggal lahir dianonimkan dan
+   * tautan wali dihapus.
    */
   async handleRequest(
     ctx: OrgContext,
@@ -379,7 +385,7 @@ export class GuardianService {
     input: z.output<typeof HandleDataRequestSchema>,
     meta: Meta,
   ) {
-    const keys = await withTenant(this.db, ctx.id, user.personId, async (tx) => {
+    const res = await withTenant(this.db, ctx.id, user.personId, async (tx) => {
       const [r] = await tx
         .select({ r: dataRequest, childPersonId: membership.personId })
         .from(dataRequest)
@@ -390,7 +396,52 @@ export class GuardianService {
       if (r.r.status !== 'pending')
         throw new UnprocessableEntityException('Permintaan sudah diproses');
       let removed: string[] = [];
+      let anonymized = false;
       if (input.status === 'done') {
+        const mid = r.r.membershipId;
+        const child = r.childPersonId;
+        const [p] = await tx
+          .select({ name: person.fullName })
+          .from(person)
+          .where(eq(person.id, child));
+        // Dokumen anak di klub ini (termasuk bukti bayar): lepas dulu dari pembayaran.
+        const docs = await tx
+          .select({ id: document.id, key: document.storageKey })
+          .from(document)
+          .where(eq(document.personId, child));
+        if (docs.length) {
+          await tx
+            .update(payment)
+            .set({ proofDocumentId: null })
+            .where(
+              inArray(
+                payment.proofDocumentId,
+                docs.map((d) => d.id),
+              ),
+            );
+          await tx.delete(document).where(
+            inArray(
+              document.id,
+              docs.map((d) => d.id),
+            ),
+          );
+        }
+        removed = docs.map((d) => d.key);
+        await tx.delete(attendance).where(eq(attendance.membershipId, mid));
+        await tx.delete(rsvp).where(eq(rsvp.membershipId, mid));
+        await tx.delete(assessment).where(eq(assessment.membershipId, mid));
+        await tx.delete(assessmentNote).where(eq(assessmentNote.membershipId, mid));
+        await tx.delete(teamMember).where(eq(teamMember.membershipId, mid));
+        await tx.delete(consent).where(eq(consent.subjectPersonId, child));
+        // Tagihan belum lunas dibatalkan; tagihan lunas & pembayaran disimpan (pembukuan) tanpa identitas.
+        await tx
+          .update(invoice)
+          .set({ status: 'void' })
+          .where(and(eq(invoice.membershipId, mid), eq(invoice.status, 'unpaid')));
+        if (p?.name)
+          await tx.execute(
+            sql`update announcement_recipient set child_names = array_remove(child_names, ${p.name}) where ${p.name} = any(child_names)`,
+          );
         await tx
           .update(membership)
           .set({
@@ -400,25 +451,13 @@ export class GuardianService {
             emergencyContactName: null,
             emergencyContactPhone: null,
             photoPublic: false,
+            scholarshipReason: null,
           })
-          .where(eq(membership.id, r.r.membershipId));
-        await tx
-          .update(teamMember)
-          .set({ leftAt: new Date() })
-          .where(
-            and(eq(teamMember.membershipId, r.r.membershipId), sql`${teamMember.leftAt} is null`),
-          );
-        const docs = await tx
-          .delete(document)
-          // Bukti bayar tetap disimpan (terhubung ke pembayaran, kewajiban pembukuan).
-          .where(
-            and(
-              eq(document.personId, r.childPersonId),
-              inArray(document.kind, ['akta', 'kia', 'kk', 'foto']),
-            ),
-          )
-          .returning({ key: document.storageKey });
-        removed = docs.map((x) => x.key);
+          .where(eq(membership.id, mid));
+        const [res] = await tx.execute<{ anonymized: boolean }>(
+          sql`select sg_erase_child_identity(${mid}::uuid) as anonymized`,
+        );
+        anonymized = Boolean(res?.anonymized);
       }
       await tx
         .update(dataRequest)
@@ -435,12 +474,17 @@ export class GuardianService {
         action: `data_request.${input.status}`,
         entityType: 'data_request',
         entityId: id,
-        meta: { documentsRemoved: removed.length },
+        meta: { documentsRemoved: removed.length, anonymized },
         ...meta,
       });
-      return removed;
+      return { removed, anonymized };
     });
-    for (const k of keys) await this.vault.remove(k).catch(() => undefined);
-    return { id, status: input.status, documentsRemoved: keys.length };
+    for (const k of res.removed) await this.vault.remove(k).catch(() => undefined);
+    return {
+      id,
+      status: input.status,
+      documentsRemoved: res.removed.length,
+      anonymized: res.anonymized,
+    };
   }
 }

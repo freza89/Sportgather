@@ -259,7 +259,7 @@ export function ProfileView({ profile }: { profile: GuardianProfile }) {
         open={Boolean(child)}
         onClose={() => setChild(null)}
         title={`Hapus data ${child?.fullName ?? ''}?`}
-        description="Admin klub akan menonaktifkan keanggotaan dan menghapus data kontak, foto, serta dokumen usia. Catatan pembayaran & kehadiran disimpan untuk pembukuan klub."
+        description="Setelah disetujui admin klub, data anak di klub ini dihapus: dokumen, kehadiran, penilaian, data kontak, dan foto. Catatan pembayaran yang sudah lunas disimpan tanpa nama untuk pembukuan klub."
       >
         <div className="flex flex-col gap-4">
           <Input

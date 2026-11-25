@@ -28,7 +28,9 @@ export function DataRequests({ slug, items }: { slug: string; items: DataRequest
   async function handle(r: DataRequestDto, status: 'done' | 'rejected') {
     const note = prompt(
       status === 'done'
-        ? `Hapus data ${r.childName}? Keanggotaan dinonaktifkan, kontak & dokumen usia dihapus. Catatan keuangan dan absensi disimpan untuk pembukuan.\n\nCatatan (opsional):`
+        ? `Hapus data ${r.childName}? Dokumen, absensi, penilaian, riwayat tim, persetujuan, dan data kontak dihapus; tagihan belum lunas dibatalkan. Tagihan lunas disimpan tanpa identitas untuk pembukuan. Bila anak tidak terdaftar di klub lain, nama & tanggal lahirnya dianonimkan.
+
+Catatan (opsional):`
         : `Tolak permintaan untuk ${r.childName}. Alasan:`,
     );
     if (note === null) return;
@@ -45,8 +47,8 @@ export function DataRequests({ slug, items }: { slug: string; items: DataRequest
   return (
     <div className="flex flex-col gap-4">
       <Alert tone="info">
-        Wali bisa meminta penghapusan data anak dari aplikasi. Data keuangan & absensi tetap
-        disimpan sesuai kewajiban pembukuan; data kontak, foto, dan dokumen usia dihapus.
+        Wali bisa meminta penghapusan data anak dari aplikasi. Bila disetujui, data anak di klub ini
+        dihapus; hanya catatan pembayaran lunas yang disimpan tanpa identitas untuk pembukuan.
       </Alert>
       {error ? <Alert tone="danger">{error}</Alert> : null}
       <Card className="overflow-hidden">

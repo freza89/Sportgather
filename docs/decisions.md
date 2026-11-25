@@ -321,12 +321,12 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 **Status:** Diterima (M5)
 **Keputusan:**
 - **Unduh data anak:** PDF salinan data (profil, riwayat tim, rekap kehadiran, tagihan, daftar dokumen & persetujuan). Dicatat di audit.
-- **Permintaan hapus data** diproses admin (Pengaturan › Data & privasi). Bila disetujui:
-  - Keanggotaan menjadi `left`.
-  - Data kontak & sekolah dikosongkan, izin foto dimatikan.
-  - Dokumen usia & foto dihapus dari storage.
-  - Catatan keuangan (tagihan, pembayaran, bukti bayar) dan absensi disimpan untuk kewajiban pembukuan.
-  - Anonimisasi penuh menunggu kebijakan retensi resmi.
+- **Permintaan hapus data** diproses admin (Pengaturan › Data & privasi). Bila disetujui (diputuskan bersama pemilik produk: hapus sebanyak mungkin):
+  - **Dihapus:** semua dokumen anak di klub itu (termasuk bukti bayar) dari database & storage, absensi, RSVP, penilaian & catatan pelatih, riwayat tim, persetujuan, data kontak/sekolah, alasan beasiswa, nama anak di daftar penerima pengumuman.
+  - **Tagihan belum lunas** dibatalkan (`void`).
+  - **Disimpan tanpa identitas:** tagihan lunas, pembayaran, dan ledger, karena wajib untuk pembukuan dan penyaluran dana.
+  - **Identitas:** bila anak tidak terdaftar di klub lain, nama diganti "Data dihapus", tanggal lahir & jenis kelamin dikosongkan, dan tautan wali dihapus (fungsi `sg_erase_child_identity`, hanya untuk keanggotaan di klub konteks). Bila anak masih terdaftar di klub lain, data klub lain tidak disentuh.
+  - Audit log tetap ada (tanpa data pribadi).
 
 ---
 

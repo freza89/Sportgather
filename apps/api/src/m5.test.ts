@@ -475,9 +475,17 @@ describe('M5 · komunikasi, pembinaan, laporan', () => {
         status: 'done',
         note: 'Sesuai permintaan',
       });
-      expect(done.body).toMatchObject({ status: 'done' });
+      expect(done.body).toMatchObject({ status: 'done', anonymized: true });
       const p = (await owner.call('GET', `${base()}/players/${nadia}`)).body;
-      expect(p.status).toBe('left');
+      expect(p).toMatchObject({ status: 'left', fullName: 'Data dihapus' });
+      // Tautan wali dihapus: Nadia tidak lagi muncul di akun Rina.
+      expect((await rina.call('GET', '/v1/me/profile')).body.children).toHaveLength(1);
+      const left = await h.db.admin.db.execute<{ n: number }>(sql`
+        select (select count(*) from team_member where membership_id = ${nadia})
+          + (select count(*) from assessment where membership_id = ${nadia})
+          + (select count(*) from attendance where membership_id = ${nadia})
+          + (select count(*) from invoice where membership_id = ${nadia} and status = 'unpaid') as n`);
+      expect(Number(left[0]!.n)).toBe(0);
       expect(
         (await owner.call('PATCH', `${base()}/data-requests/${list[0].id}`, { status: 'done' }))
           .status,
