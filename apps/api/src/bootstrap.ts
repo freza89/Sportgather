@@ -12,7 +12,12 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.register(env),
     new FastifyAdapter({ trustProxy: env.NODE_ENV === 'production' }),
-    { logger: env.NODE_ENV === 'test' ? false : ['log', 'warn', 'error'] },
+    {
+      logger: env.NODE_ENV === 'test' ? false : ['log', 'warn', 'error'],
+      // Gagal start (mis. storage tidak terjangkau) dilempar sebagai error, bukan process.abort(),
+      // agar pesan jelas dan proses tes tidak ikut mati.
+      abortOnError: false,
+    },
   );
   await app.register(helmet, { contentSecurityPolicy: env.NODE_ENV === 'production' });
   await app.register(cookie);
