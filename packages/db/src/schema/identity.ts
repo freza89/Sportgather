@@ -35,6 +35,8 @@ export const userAccount = pgTable(
     email: text(),
     /** scrypt; hanya untuk owner/admin yang memilih login email (opsional). */
     passwordHash: text(),
+    /** Notifikasi WhatsApp non-wajib (pengingat, pengumuman). OTP & kuitansi tetap dikirim. */
+    notifyWhatsapp: boolean().notNull().default(true),
     lastLoginAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },

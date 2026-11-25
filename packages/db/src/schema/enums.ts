@@ -75,3 +75,16 @@ export const withdrawalStatusEnum = pgEnum('withdrawal_status', [
   'completed',
   'failed',
 ]);
+export const announcementTargetEnum = pgEnum('announcement_target', [
+  'club',
+  'branch',
+  'ku',
+  'team',
+]);
+export const announcementStatusEnum = pgEnum('announcement_status', [
+  'scheduled',
+  'sent',
+  'cancelled',
+]);
+export const announcementSourceEnum = pgEnum('announcement_source', ['manual', 'schedule_change']);
+export const dataRequestStatusEnum = pgEnum('data_request_status', ['pending', 'done', 'rejected']);
