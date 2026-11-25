@@ -12,7 +12,10 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.register(env),
     new FastifyAdapter({ trustProxy: env.NODE_ENV === 'production' }),
-    { logger: env.NODE_ENV === 'test' ? false : ['log', 'warn', 'error'] },
+    {
+      logger:
+        env.NODE_ENV === 'test' && !process.env.SG_TEST_LOG ? false : ['log', 'warn', 'error'],
+    },
   );
   await app.register(helmet, { contentSecurityPolicy: env.NODE_ENV === 'production' });
   await app.register(cookie);

@@ -10,3 +10,4 @@ export * from './contracts/org.js';
 export * from './contracts/players.js';
 export * from './players/import.js';
 export * from './schedule/schedule.js';
+export * from './contracts/schedule.js';
