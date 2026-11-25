@@ -173,13 +173,12 @@ export class OtpService {
 
       let userId = account?.id;
       if (!userId) {
-        const [p] = await tx
-          .insert(person)
-          .values({ fullName: fullName! })
-          .returning({ id: person.id });
+        // id dibuat aplikasi: RLS person tidak mengizinkan RETURNING sebelum orang ini punya relasi.
+        const personId = crypto.randomUUID();
+        await tx.insert(person).values({ id: personId, fullName: fullName! });
         const [created] = await tx
           .insert(userAccount)
-          .values({ personId: p!.id, phone: c.phone })
+          .values({ personId, phone: c.phone })
           .returning({ id: userAccount.id });
         userId = created!.id;
       }

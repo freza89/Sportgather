@@ -11,7 +11,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { authEvent, person, staffRole, userAccount, type Database } from '@sportgather/db';
+import {
+  authEvent,
+  person,
+  staffRole,
+  userAccount,
+  withContext,
+  type Database,
+} from '@sportgather/db';
 import {
   OtpRequestSchema,
   OtpSmsFallbackSchema,

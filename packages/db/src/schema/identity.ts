@@ -1,6 +1,7 @@
 // Tabel identitas GLOBAL (tidak terikat tenant). Satu orang = satu akun lintas klub (PRD bagian 7).
 import { sql } from 'drizzle-orm';
 import {
+  boolean,
   date,
   index,
   integer,
@@ -108,7 +109,12 @@ export const guardianLink = pgTable(
       .notNull()
       .references(() => person.id),
     relation: guardianRelationEnum().notNull(),
+    /** Wali utama: penerima tagihan & notifikasi. */
+    isPrimary: boolean().notNull().default(true),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.guardianPersonId, t.childPersonId] })],
+  (t) => [
+    primaryKey({ columns: [t.guardianPersonId, t.childPersonId] }),
+    index('guardian_link_child_idx').on(t.childPersonId),
+  ],
 );

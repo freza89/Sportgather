@@ -86,13 +86,12 @@ export class StaffService {
     const result = await withTenant(this.db, ctx.id, user.personId, async (tx) => {
       let [account] = await tx.select().from(userAccount).where(eq(userAccount.phone, input.phone));
       if (!account) {
-        const [p] = await tx
-          .insert(person)
-          .values({ fullName: input.fullName })
-          .returning({ id: person.id });
+        // id dibuat aplikasi: RLS person tidak mengizinkan RETURNING sebelum orang ini punya relasi.
+        const newPersonId = crypto.randomUUID();
+        await tx.insert(person).values({ id: newPersonId, fullName: input.fullName });
         [account] = await tx
           .insert(userAccount)
-          .values({ personId: p!.id, phone: input.phone })
+          .values({ personId: newPersonId, phone: input.phone })
           .returning();
       }
       const personId = account!.personId;
