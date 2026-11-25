@@ -48,3 +48,26 @@ export function fieldErrors(
   }
   return out;
 }
+
+/** Unggah multipart (dokumen) lewat proxy /api. */
+export async function apiUpload<T>(path: string, form: FormData): Promise<ApiResult<T>> {
+  let res: Response;
+  try {
+    res = await fetch(`/api${path}`, { method: 'POST', credentials: 'same-origin', body: form });
+  } catch {
+    return { ok: false, status: 0, message: 'Tidak ada koneksi internet. Coba lagi.', issues: [] };
+  }
+  if (res.ok) return { ok: true, data: (await res.json()) as T };
+  const err = (await res.json().catch(() => null)) as { message?: string } | null;
+  return {
+    ok: false,
+    status: res.status,
+    message:
+      res.status === 413
+        ? 'Ukuran file maksimal 5 MB'
+        : (err?.message ?? 'Pengiriman gagal. Coba lagi.'),
+    issues: [],
+  };
+}
+
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
