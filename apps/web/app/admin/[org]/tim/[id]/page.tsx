@@ -1,8 +1,15 @@
-import { formatAge, formatTanggalIso, kuLabel, type TeamDetail } from '@sportgather/shared';
+import {
+  formatAge,
+  formatTanggalIso,
+  kuLabel,
+  type SeriesDto,
+  type TeamDetail,
+} from '@sportgather/shared';
 import { Alert, Avatar, Badge, Card, IconLayers } from '@sportgather/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MemberStatusBadge, PlacementBadge } from '@/components/players/badges';
+import { SeriesCard } from '@/components/schedule/series-card';
 import { AddMemberDialog } from '@/components/teams/add-member-dialog';
 import { RemoveMemberButton } from '@/components/teams/remove-member-button';
 import { TeamFormDialog } from '@/components/teams/team-form-dialog';
@@ -19,10 +26,11 @@ export default async function TimDetailPage({
   params: Promise<{ org: string; id: string }>;
 }) {
   const { org: slug, id } = await params;
-  const [team, ctx, session] = await Promise.all([
+  const [team, ctx, session, series] = await Promise.all([
     apiPage<TeamDetail>(`/orgs/${slug}/teams/${id}`, `/admin/${slug}/tim/${id}`),
     loadTeamContext(slug),
     getClubSession(slug, `/admin/${slug}/tim/${id}`),
+    apiPage<SeriesDto[]>(`/orgs/${slug}/schedule/series?teamId=${id}`),
   ]);
   const coaches = team.coaches.map((c) => c.fullName).join(', ') || 'belum ada pelatih';
 
@@ -52,6 +60,8 @@ export default async function TimDetailPage({
           <AddMemberDialog slug={slug} teamId={team.id} isOwner={session.role === 'owner'} />
         </div>
       </div>
+
+      <SeriesCard slug={slug} teamId={team.id} series={series} />
 
       <Alert tone="info" icon={IconLayers}>
         Sistem hanya menawarkan pemain dengan KU sesuai. Play-up wajib alasan; play-down butuh

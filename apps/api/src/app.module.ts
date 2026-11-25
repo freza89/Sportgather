@@ -8,6 +8,7 @@ import { IntegrationsModule } from './integrations/integrations.module.js';
 import { MeModule } from './me/me.controller.js';
 import { OrgsModule } from './orgs/orgs.module.js';
 import { PlayersModule } from './players/players.controller.js';
+import { ScheduleModule } from './schedule/schedule.controller.js';
 import { SeasonsModule } from './seasons/seasons.controller.js';
 import { StorageModule } from './storage/storage.module.js';
 import { TeamsModule } from './teams/teams.controller.js';
@@ -28,6 +29,7 @@ export class AppModule {
         SeasonsModule,
         TeamsModule,
         PlayersModule,
+        ScheduleModule,
         MeModule,
         ...(devTools ? [DevModule] : []),
       ],

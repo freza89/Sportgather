@@ -16,6 +16,12 @@ const EnvSchema = z.object({
   WHATSAPP_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   SMS_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   BANK_VERIFICATION_PROVIDER: z.enum(['mock', 'real']).default('mock'),
+  REDIS_URL: z.string().default('redis://localhost:56379'),
+  /** Job terjadwal (pengingat H-1, dst.) lewat BullMQ. Mati di tes; nyalakan di satu instance. */
+  JOBS_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
   /** memory (tes) | s3 (lokal: SeaweedFS, produksi: object storage region Jakarta). */
   STORAGE_PROVIDER: z.enum(['memory', 's3']).default('s3'),
   S3_ENDPOINT: z.string().default('http://localhost:59000'),

@@ -38,3 +38,13 @@ export const documentKindEnum = pgEnum('document_kind', ['akta', 'kia', 'kk', 'f
 export const documentStatusEnum = pgEnum('document_status', ['pending', 'verified', 'rejected']);
 export const genderEnum = pgEnum('gender', ['male', 'female']);
 export const guardianRelationEnum = pgEnum('guardian_relation', ['father', 'mother', 'guardian']);
+export const eventKindEnum = pgEnum('event_kind', [
+  'training',
+  'match',
+  'tournament',
+  'assessment',
+  'other',
+]);
+export const eventStatusEnum = pgEnum('event_status', ['scheduled', 'cancelled']);
+export const rsvpStatusEnum = pgEnum('rsvp_status', ['hadir', 'izin', 'sakit']);
+export const attendanceStatusEnum = pgEnum('attendance_status', ['hadir', 'izin', 'sakit', 'alpa']);

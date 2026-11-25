@@ -203,3 +203,44 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 | D-17 | A-06 kolom "Iuran Okt" | Status iuran | Diganti kolom "Status" keanggotaan sampai modul iuran (M4) |
 | D-18 | A-09/A-10 jadwal & kehadiran | Ditampilkan di kartu tim | Menyusul di M3 |
 | D-19 | O-01 urutan langkah | Langkah 1 data anak + persetujuan, langkah 2 data wali | Sama, ditambah verifikasi OTP WhatsApp wali di langkah 2 dan langkah 3 "Tinjau & kirim" |
+
+---
+
+## ADR-021 · Waktu & jadwal berulang
+**Status:** Diterima (M3)
+**Keputusan:**
+- **Waktu:** jam disimpan sebagai `timestamptz` (UTC). Tampilan dan perhitungan "hari ini/besok" memakai zona cabang. Zona Indonesia tanpa DST, sehingga offset tetap (WIB +7, WITA +8, WIT +9) dan tidak butuh pustaka zona waktu.
+- **Pola mingguan:** disimpan per hari (`event_series`). Sesi konkret dibuat sampai akhir musim, dengan unique `(series_id, occurrence_date)` agar tidak ganda.
+- **Ubah satu sesi:** menandai sesi itu `is_exception`, dan sesi lain tidak tersentuh (US-07). Menghentikan pola hanya menghapus sesi mendatang yang belum diubah dan belum diabsen.
+- **Hari libur:** membatalkan sesi pada tanggal tersebut (alasan "Libur: …"). Menghapus hari libur menjadwalkan sesi itu kembali.
+
+## ADR-022 · Absensi offline-first
+**Status:** Diterima (M3)
+**Keputusan:**
+- **Di HP:** lembar sesi dan antrean perubahan disimpan di IndexedDB, lalu dikirim saat online (event `online`, juga saat halaman dibuka).
+- **Di server:** setiap operasi punya `clientOpId`, dicatat di `attendance_op`, sehingga kirim ulang tidak menggandakan data. Bila ada dua perubahan untuk pemain yang sama, yang `recordedAt`-nya (waktu di HP) lebih baru yang menang (US-09).
+- **Service worker:** halaman `/pelatih` dan `/wali` memakai strategi network-first dengan salinan terakhir untuk offline. Aset `/_next/static` cache-first. `/api` tidak pernah di-cache.
+- **Jendela pengisian:** absensi bisa diisi mulai H-1 sesi (mis. izin yang sudah diketahui), tidak untuk sesi yang dibatalkan.
+
+## ADR-023 · RSVP, link bertoken, dan pengingat
+**Status:** Diterima (M3)
+**Keputusan:**
+- **Batas RSVP:** RSVP ditutup 2 jam sebelum sesi (US-08).
+- **Link bertoken:** berlaku 48 jam dan sekali pakai (hanya hash yang disimpan). Pilihan untuk semua anak dikirim dalam satu permintaan.
+- **Pengingat H-1:**
+  - Dikirim pukul 17.00 waktu cabang, satu pesan gabungan per wali per hari.
+  - Tidak dikirim di jam tenang 21.00–06.00.
+  - Dedupe lewat `notification_log`.
+  - Dijalankan BullMQ setiap 15 menit, hanya bila `JOBS_ENABLED=true` (nyalakan di satu instance).
+- **Perubahan/pembatalan sesi oleh admin:** dikirim langsung ke wali dan pelatih tim (COM-02), termasuk di jam tenang, karena ini aksi manual yang mendesak. Status "dibaca" menyusul di M5.
+
+---
+
+## Selisih desain (tambahan M3)
+
+| # | Topik | Desain | Implementasi |
+| --- | --- | --- | --- |
+| D-20 | A-12 tampilan "Bulan" & "Daftar" | Tiga tab | Tampilan minggu + navigasi minggu & filter tim. Tampilan bulan/daftar menyusul |
+| D-21 | A-12 filter "Semua cabang" | Dropdown cabang | Filter tim (cabang bisa difilter lewat API, UI menyusul) |
+| D-22 | A-09 kehadiran 30 hari di kartu tim | Ditampilkan | Tersedia di P-03 (pelatih). Kartu admin & dashboard menyusul (M5) |
+| D-23 | P-02 chip ringkasan | Chip "Hadir" disorot | Sama, dihitung langsung dari isian layar |

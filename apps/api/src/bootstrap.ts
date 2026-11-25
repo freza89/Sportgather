@@ -13,7 +13,8 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
     AppModule.register(env),
     new FastifyAdapter({ trustProxy: env.NODE_ENV === 'production' }),
     {
-      logger: env.NODE_ENV === 'test' ? false : ['log', 'warn', 'error'],
+      logger:
+        env.NODE_ENV === 'test' && !process.env.SG_TEST_LOG ? false : ['log', 'warn', 'error'],
       // Gagal start (mis. storage tidak terjangkau) dilempar sebagai error, bukan process.abort(),
       // agar pesan jelas dan proses tes tidak ikut mati.
       abortOnError: false,
