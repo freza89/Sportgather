@@ -281,3 +281,65 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 | D-27 | A-15 "Unduh laporan" | Tombol ekspor | Menyusul bersama laporan (M5, A-18) |
 | D-28 | O-05 rincian | Tanpa biaya layanan | Biaya layanan per metode ditampilkan (keputusan Q5); QRIS gratis selama ADR-016 |
 | D-29 | Kuitansi | Tidak didesain | PDF A5 sederhana (logo klub menyusul) |
+
+---
+
+## ADR-026 · Mesin notifikasi & pengumuman
+**Status:** Diterima (M5)
+**Keputusan:**
+- **Satu pintu kirim** (`NotifierService`): WhatsApp (template Meta) + Web Push (VAPID) untuk yang sudah memasang PWA. Langganan push yang kedaluwarsa (404/410) dihapus otomatis.
+- **Pengumuman** ke seluruh klub, cabang, KU (KU tim musim aktif), atau tim. Penerima adalah wali utama dari pemain aktif. Wali dengan beberapa anak menerima satu pesan.
+- **Status dibaca:** setiap penerima mendapat link bertoken `/i/<token>` (30 hari, tanpa login) di WhatsApp/push. Membuka link, atau membuka pengumuman di aplikasi, menandai dibaca. Admin melihat terkirim/dibaca per pengumuman.
+- **Perubahan/pembatalan sesi (COM-02)** kini dibuat sebagai pengumuman sistem (`source = schedule_change`), sehingga juga punya status dibaca. Penerimanya wali + pelatih tim. Pesan ini wajib: tetap lewat WhatsApp walau wali mematikan notifikasi WhatsApp.
+- **Pelatih (P-05)** hanya bisa mengirim ke tim yang dipegang, dan riwayatnya hanya tim itu.
+- **Terjadwal:** dikirim job tiap 5 menit. Waktu kirim di jam tenang 21.00–06.00 ditolak. Kirim manual "sekarang" tetap boleh kapan saja (aksi sengaja admin, seperti ADR-023).
+- **Opt-out WhatsApp (O-08):** mematikan pengingat, pengumuman, dan rapor terbit lewat WhatsApp. OTP, kuitansi, dan perubahan jadwal mendadak tetap dikirim.
+- **Matriks notifikasi yang dilengkapi:** tagihan terbit (gabungan per wali, mulai 09.00), ringkasan terlambat ke owner/admin tiap Senin, hasil penarikan dana ke owner, push kuitansi, dan rapor terbit.
+
+## ADR-027 · Penilaian skill & rapor
+**Status:** Diterima (M5)
+**Keputusan:**
+- **Template skill basket bawaan per rentang KU** ditanam saat klub pertama kali membuka penilaian (tabel `skill`, bisa dinonaktifkan atau ditambah lewat API).
+- **Semester** = setengah pertama/kedua rentang musim aktif (bukan kalender).
+- **Skor 1–5 per skill + satu catatan** per pemain per semester.
+  - Hanya pembuatnya yang bisa mengubah, dalam 7 hari sejak penilaian pertama (US-15). Owner/admin juga tidak bisa menimpa.
+  - Setelah rapor semester terbit, penilaian terkunci.
+- **Rapor terbit per semester oleh admin.** Wali baru melihat rapor setelah itu, dan dikabari lewat WhatsApp + push.
+- **Kehadiran di rapor** = hadir ÷ sesi yang diabsen dalam rentang semester (sesi dibatalkan tidak dihitung).
+- **PDF rapor** memakai inisial klub sebagai lencana. Logo klub menyusul bersama fitur unggah logo.
+
+## ADR-028 · Dashboard = laporan (US-18)
+**Status:** Diterima (M5)
+**Keputusan:**
+- **Fungsi agregasi bersama:** dashboard (A-17) dan laporan (A-18) memakai fungsi `summary(periode)` yang sama. Setiap ekspor Excel/PDF menyertakan sheet "Ringkasan" dari fungsi itu, sehingga angkanya identik untuk periode yang sama (dibuktikan tes).
+- **Data dihitung langsung** dari database pada tiap permintaan, tanpa cache. Syarat "diperbarui ≤15 menit" terpenuhi; cache ditambahkan bila beban menuntut.
+- **Iuran tertagih/terbayar** = tagihan (belum lunas + lunas) yang terbit di periode, dihitung per nominal. "Terlambat" = belum lunas dengan jatuh tempo sebelum akhir periode.
+- **"Pemain aktif per KU"** memakai KU dari tanggal lahir dan acuan KU musim, sama dengan A-06.
+- **Pendapatan per KU** = pembayaran (online + manual) menurut tanggal bayar.
+
+## ADR-029 · Hak data wali
+**Status:** Diterima (M5)
+**Keputusan:**
+- **Unduh data anak:** PDF salinan data (profil, riwayat tim, rekap kehadiran, tagihan, daftar dokumen & persetujuan). Dicatat di audit.
+- **Permintaan hapus data** diproses admin (Pengaturan › Data & privasi). Bila disetujui:
+  - Keanggotaan menjadi `left`.
+  - Data kontak & sekolah dikosongkan, izin foto dimatikan.
+  - Dokumen usia & foto dihapus dari storage.
+  - Catatan keuangan (tagihan, pembayaran, bukti bayar) dan absensi disimpan untuk kewajiban pembukuan.
+  - Anonimisasi penuh menunggu kebijakan retensi resmi.
+
+---
+
+## Selisih desain (tambahan M5)
+
+| # | Topik | Desain | Implementasi |
+| --- | --- | --- | --- |
+| D-30 | A-17 "Kehadiran 30 hari" | 30 hari terakhir | "Kehadiran bulan ini", agar sama persis dengan laporan periode yang sama (ADR-028) |
+| D-31 | A-17 "Penyaluran Rp6,24 jt · Cair Jumat" | Jadwal cair otomatis | "Dana siap ditarik" (penarikan manual, ADR-016) |
+| D-32 | A-17 aksi "Ingatkan" sesi belum diabsen | Tombol kirim pengingat | Tautan ke Jadwal. Pengingat ke pelatih menyusul |
+| D-33 | A-16 template WhatsApp per pengumuman | "perubahan_jadwal (disetujui Meta)" | Satu template `pengumuman` untuk pengumuman manual; `perubahan_jadwal` untuk perubahan sesi |
+| D-34 | O-03 "Sudah termasuk diskon saudara" | Diskon saudara | Dihapus dari MVP (Q4) |
+| D-35 | O-03 kartu anak di atas | Chip pilih anak | Daftar kartu anak tetap di bawah (dari M2); kartu tagihan & pengumuman ditambahkan |
+| D-36 | P-04 navigasi | Tab "Penilaian" di bottom nav dan layar detail dengan tombol kembali | Layar detail dengan tombol kembali (bottom nav disembunyikan agar tombol Simpan tidak tertutup) |
+| D-37 | Logo klub di rapor PDF | Logo | Lencana inisial klub; unggah logo menyusul |
+| D-38 | Edit template skill (DEV-01, P1) | – | API tersedia (`/orgs/:slug/skills`); layar pengaturan menyusul |

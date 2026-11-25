@@ -69,6 +69,15 @@ Mencoba M4 (iuran & pembayaran):
 4. Jalankan ulang `pnpm dev`. Tombol bayar wali kini membuka Snap sandbox; bayar dengan [simulator sandbox](https://simulator.sandbox.midtrans.com/).
 5. **Webhook (opsional di lokal):** setelah kembali dari Snap, halaman status mengecek ulang ke Status API Midtrans, jadi pembayaran tetap tercatat tanpa webhook. Untuk menguji webhook, buka tunnel ke web (mis. `cloudflared tunnel --url http://localhost:3000`) lalu isi _Settings › Payment › Notification URL_ dengan `https://<tunnel>/api/webhooks/midtrans`.
 
+Mencoba M5 (komunikasi, pembinaan, laporan):
+
+1. **Beranda (A-17):** ringkasan klub, pemain per KU, daftar "Perlu tindakan", dan sesi hari ini.
+2. **Pengumuman (A-16):** pilih target (klub/cabang/KU/tim), lihat jumlah wali, lalu kirim atau jadwalkan. WhatsApp mock berisi link `/i/<token>`. Membukanya menandai dibaca di riwayat.
+3. **Pelatih:** `/pelatih/<slug>/penilaian` untuk skor 1–5 dan catatan (bisa diubah 7 hari), dan `/pelatih/<slug>/info` untuk kirim info ke wali tim sendiri.
+4. **Laporan (A-18):** pilih periode, unduh Excel/PDF (angka "Ringkasan" sama dengan dashboard), lalu **Terbitkan rapor** semester.
+5. **Wali:** Beranda (tagihan & pengumuman), **Rapor** (unduh PDF), **Profil** (izin foto, notifikasi WhatsApp/aplikasi, unduh data, minta hapus data). Permintaan hapus muncul di **Pengaturan › Data & privasi**.
+6. **Notifikasi aplikasi (Web Push):** `pnpm --filter api vapid:generate`, salin hasilnya ke `.env`, jalankan ulang API, lalu aktifkan dari Profil wali (butuh HTTPS atau `localhost`).
+
 Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/wali` (area orang tua), `/design` (design system).
 
 ## Pemeriksaan
