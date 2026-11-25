@@ -156,6 +156,9 @@ export const membership = pgTable(
     emergencyContactPhone: text(),
     /** Izin publikasi foto (PRD bagian 8): default tidak. */
     photoPublic: boolean().notNull().default(false),
+    /** Beasiswa 0–100% (FEE-01), ditetapkan owner. */
+    scholarshipPct: integer().notNull().default(0),
+    scholarshipReason: text(),
     registeredBy: uuid().references(() => person.id),
     reviewedBy: uuid().references(() => person.id),
     reviewedAt: timestamp({ withTimezone: true }),
