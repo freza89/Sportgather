@@ -16,6 +16,11 @@ const EnvSchema = z.object({
   WHATSAPP_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   SMS_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   BANK_VERIFICATION_PROVIDER: z.enum(['mock', 'real']).default('mock'),
+  /** Web Push (PWA). real butuh kunci VAPID: pnpm --filter api vapid:generate */
+  PUSH_PROVIDER: z.enum(['mock', 'real']).default('mock'),
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default('mailto:dev@sportgather.local'),
   /** Penyaluran dana (Iris). Terpisah dari PAYMENT_PROVIDER: Snap sandbox bisa dipakai sebelum Iris aktif. */
   PAYOUT_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   REDIS_URL: z.string().default('redis://localhost:56379'),
@@ -80,6 +85,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
         'SMS_PROVIDER',
         'BANK_VERIFICATION_PROVIDER',
         'PAYOUT_PROVIDER',
+        'PUSH_PROVIDER',
       ] as const
     ).filter((k) => env[k] === 'mock');
     if (mocks.length)
@@ -87,6 +93,8 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     if (env.AUTH_SECRET === DEV_AUTH_SECRET)
       throw new Error('AUTH_SECRET wajib diatur di production');
   }
+  if (env.PUSH_PROVIDER === 'real' && (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY))
+    throw new Error('PUSH_PROVIDER=real butuh VAPID_PUBLIC_KEY & VAPID_PRIVATE_KEY');
   if (env.PAYMENT_PROVIDER === 'real' && env.MIDTRANS_SERVER_KEY.includes('MOCK'))
     throw new Error(
       'PAYMENT_PROVIDER=real butuh MIDTRANS_SERVER_KEY asli (sandbox: SB-Mid-server-…)',

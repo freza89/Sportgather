@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ENV, type Env } from '../config/env.js';
 import { BANK_VERIFIER, MockBankVerifier } from './bank-verification.js';
 import { MockOutbox, SMS_SENDER, WHATSAPP_SENDER } from './messaging.js';
+import { MockPush, PUSH_SENDER, WebPushSender } from './push.js';
 import {
   MidtransHttpGateway,
   MockIris,
@@ -23,6 +24,15 @@ function notConfigured(name: string): never {
     MockBankVerifier,
     MockMidtrans,
     MockIris,
+    MockPush,
+    {
+      provide: PUSH_SENDER,
+      inject: [ENV, MockPush],
+      useFactory: (env: Env, mock: MockPush) =>
+        env.PUSH_PROVIDER === 'real'
+          ? new WebPushSender(env.VAPID_PUBLIC_KEY!, env.VAPID_PRIVATE_KEY!, env.VAPID_SUBJECT)
+          : mock,
+    },
     {
       provide: PAYMENT_GATEWAY,
       inject: [ENV, MockMidtrans],
@@ -71,6 +81,8 @@ function notConfigured(name: string): never {
     MockMidtrans,
     PAYMENT_GATEWAY,
     PAYOUT_PROVIDER,
+    MockPush,
+    PUSH_SENDER,
   ],
 })
 export class IntegrationsModule {}

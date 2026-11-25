@@ -13,6 +13,13 @@ import {
   payment,
   paymentAttempt,
   withdrawal,
+  announcement,
+  announcementRecipient,
+  assessment,
+  assessmentNote,
+  dataRequest,
+  reportPublication,
+  skill,
   attendance,
   attendanceOp,
   auditLog,
@@ -307,6 +314,49 @@ describe('isolasi tenant (RLS)', () => {
         sha256: 'x',
         uploadedBy: owner,
       });
+      // Tabel M5: pengumuman, penilaian, rapor, permintaan data.
+      const [ann] = await db
+        .insert(announcement)
+        .values({
+          orgId: org,
+          authorPersonId: owner,
+          title: 'Info',
+          body: 'Isi',
+          targetKind: 'club',
+          targetLabel: 'Seluruh klub',
+          eventId: ev!.id,
+        })
+        .returning();
+      await db
+        .insert(announcementRecipient)
+        .values({ orgId: org, announcementId: ann!.id, personId: owner });
+      const [sk] = await db
+        .insert(skill)
+        .values({ orgId: org, name: 'Dribel', kuMin: 8, kuMax: 16 })
+        .returning();
+      await db.insert(assessment).values({
+        orgId: org,
+        membershipId: m!.id,
+        seasonId: s1!.id,
+        semester: 1,
+        skillId: sk!.id,
+        score: 4,
+        assessedBy: owner,
+      });
+      await db.insert(assessmentNote).values({
+        orgId: org,
+        membershipId: m!.id,
+        seasonId: s1!.id,
+        semester: 1,
+        note: 'Bagus',
+        authorPersonId: owner,
+      });
+      await db
+        .insert(reportPublication)
+        .values({ orgId: org, seasonId: s1!.id, semester: 1, publishedBy: owner });
+      await db
+        .insert(dataRequest)
+        .values({ orgId: org, requesterPersonId: owner, membershipId: m!.id });
     }
   });
 

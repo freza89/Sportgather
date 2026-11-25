@@ -37,14 +37,10 @@ import {
 } from '@sportgather/shared';
 import { and, asc, count, eq, gte, inArray, isNull, lte, or, sql } from 'drizzle-orm';
 import type { z } from 'zod';
+import { AnnouncementsService } from '../announcements/announcements.service.js';
 import { AuditService } from '../audit/audit.service.js';
 import type { AuthUser, OrgContext } from '../common/request.js';
 import { DB } from '../db/db.module.js';
-import {
-  WHATSAPP_SENDER,
-  type MessageSender,
-  type OutboundMessage,
-} from '../integrations/messaging.js';
 import { coachesOfTeams, guardiansOfTeams } from '../notifications/recipients.js';
 import { todayIso } from '../seasons/ku-context.js';
 
@@ -59,8 +55,8 @@ export function zoneOf(tz: string | null | undefined): ZonaWaktu {
 export class ScheduleService {
   constructor(
     @Inject(DB) private readonly db: Database,
-    @Inject(WHATSAPP_SENDER) private readonly whatsapp: MessageSender,
     private readonly audit: AuditService,
+    private readonly announcements: AnnouncementsService,
   ) {}
 
   /** A-12: sesi dalam rentang tanggal (+ hari libur). */
@@ -279,7 +275,7 @@ export class ScheduleService {
     input: z.output<typeof EventUpdateSchema>,
     meta: Meta,
   ) {
-    const { dto, messages } = await withTenant(this.db, ctx.id, user.personId, async (tx) => {
+    const { dto, annId } = await withTenant(this.db, ctx.id, user.personId, async (tx) => {
       const before = await this.dtoById(tx, eventId);
       if (!before) throw new NotFoundException('Sesi tidak ditemukan');
       const [current] = await tx.select().from(event).where(eq(event.id, eventId));
@@ -316,14 +312,14 @@ export class ScheduleService {
         meta: { from: before.startsAt, to: after.startsAt, reason: input.cancelReason ?? null },
         ...meta,
       });
-      const messages =
+      const annId =
         input.notify && startsAt.getTime() > Date.now() - 3_600_000
-          ? await this.changeMessages(tx, before, after)
-          : [];
-      return { dto: after, messages };
+          ? await this.changeAnnouncement(tx, ctx.id, user.personId, before, after)
+          : null;
+      return { dto: after, annId };
     });
-    for (const m of messages) await this.whatsapp.send(m);
-    return { ...dto, notified: messages.length };
+    const sent = annId ? await this.announcements.deliver(ctx.id, annId) : null;
+    return { ...dto, notified: sent?.whatsapp ?? 0 };
   }
 
   /** "Atur hari libur": meniadakan sesi pada tanggal itu + kabari wali/pelatih. */
@@ -346,20 +342,19 @@ export class ScheduleService {
       const affected = (
         await this.eventsInRange(tx, input.date, input.date, undefined, input.branchId ?? undefined)
       ).filter((e) => e.status === 'scheduled');
-      const out: OutboundMessage[] = [];
+      const out: string[] = [];
       for (const e of affected) {
         await tx
           .update(event)
           .set({ status: 'cancelled', cancelReason: `Libur: ${input.name}`, changedAt: new Date() })
           .where(eq(event.id, e.id));
         if (new Date(e.startsAt).getTime() > Date.now()) {
-          out.push(
-            ...(await this.changeMessages(tx, e, {
-              ...e,
-              status: 'cancelled',
-              cancelReason: `Libur: ${input.name}`,
-            })),
-          );
+          const id = await this.changeAnnouncement(tx, ctx.id, user.personId, e, {
+            ...e,
+            status: 'cancelled',
+            cancelReason: `Libur: ${input.name}`,
+          });
+          if (id) out.push(id);
         }
       }
       await this.audit.log(tx, {
@@ -373,7 +368,7 @@ export class ScheduleService {
       });
       return out;
     });
-    for (const m of messages) await this.whatsapp.send(m);
+    for (const id of messages) await this.announcements.deliver(ctx.id, id);
     return { cancelled: messages.length };
   }
 
@@ -411,11 +406,14 @@ export class ScheduleService {
 
   // ── Bantuan ────────────────────────────────────────────────────────────────
 
-  private async changeMessages(
+  /** COM-02: perubahan/pembatalan sesi → pengumuman sistem dengan status dibaca per penerima. */
+  private async changeAnnouncement(
     tx: Tx,
+    orgId: string,
+    actorId: string,
     before: ScheduleEventDto,
     after: ScheduleEventDto,
-  ): Promise<OutboundMessage[]> {
+  ): Promise<string | null> {
     const zone = zoneOf(after.timezone);
     const fmt = (e: ScheduleEventDto) =>
       `${formatHariTanggal(new Date(e.startsAt), zone)} · ${formatTimeRange(new Date(e.startsAt), new Date(e.endsAt), zone)}`;
@@ -423,17 +421,22 @@ export class ScheduleService {
       after.status === 'cancelled'
         ? `Dibatalkan (${after.cancelReason})`
         : `${fmt(before)} → ${fmt(after)}${after.branchName ? ` · ${after.branchName}` : ''}`;
-    const guardians = await guardiansOfTeams(tx, [after.teamId]);
-    const coaches = await coachesOfTeams(tx, [after.teamId]);
-    const phones = new Map<string, string>();
-    for (const g of guardians) phones.set(g.phone, g.guardianName);
-    for (const c of coaches) phones.set(c.phone, 'Pelatih');
-    return [...phones.keys()].map((to) => ({
-      channel: 'whatsapp' as const,
-      to,
-      template: 'perubahan_jadwal',
-      params: { tim: after.teamName, perubahan, link: '/wali/jadwal' },
-    }));
+    const recipients = new Map<string, string[]>();
+    for (const g of await guardiansOfTeams(tx, [after.teamId]))
+      recipients.set(g.guardianPersonId, [
+        ...(recipients.get(g.guardianPersonId) ?? []),
+        g.childName,
+      ]);
+    for (const c of await coachesOfTeams(tx, [after.teamId]))
+      if (!recipients.has(c.personId)) recipients.set(c.personId, []);
+    return this.announcements.createSystem(tx, orgId, {
+      eventId: after.id,
+      title: `${after.status === 'cancelled' ? 'Sesi dibatalkan' : 'Jadwal berubah'} · ${after.teamName}`,
+      body: perubahan,
+      teamName: after.teamName,
+      recipients,
+      authorPersonId: actorId,
+    });
   }
 
   private async teamInActiveSeason(tx: Tx, teamId: string) {

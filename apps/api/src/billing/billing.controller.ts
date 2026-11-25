@@ -27,7 +27,9 @@ import {
 } from '@sportgather/shared';
 import type { FastifyReply } from 'fastify';
 import { z } from 'zod';
+import { AnnouncementsModule } from '../announcements/announcements.controller.js';
 import { AuditService } from '../audit/audit.service.js';
+import { BillingNotifications } from './billing-notifications.js';
 import { AuthGuard, CurrentUser } from '../auth/auth.guard.js';
 import { readMultipart } from '../common/multipart.js';
 import { clientMeta, type AppRequest, type AuthUser, type OrgContext } from '../common/request.js';
@@ -306,8 +308,16 @@ export class MidtransWebhookController {
 }
 
 @Module({
+  imports: [AnnouncementsModule],
   controllers: [BillingController, MyBillingController, MidtransWebhookController],
-  providers: [BillingService, PaymentsService, BillingJobs, AuditService, OrgContextGuard],
+  providers: [
+    BillingService,
+    PaymentsService,
+    BillingNotifications,
+    BillingJobs,
+    AuditService,
+    OrgContextGuard,
+  ],
   exports: [BillingService, PaymentsService],
 })
 export class BillingModule {}

@@ -11,6 +11,7 @@ const TABS = [
   { segment: 'staf', label: 'Staf & peran' },
   { segment: 'musim', label: 'Musim & kompetisi' },
   { segment: 'langganan', label: 'Langganan' },
+  { segment: 'data', label: 'Data & privasi' },
 ];
 
 export function SettingsTabs({ base }: { base: string }) {

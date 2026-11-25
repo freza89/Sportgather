@@ -9,6 +9,7 @@ import { Queue, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
 import { ENV, type Env } from '../config/env.js';
 import { BillingService } from './billing.service.js';
+import { BillingNotifications } from './billing-notifications.js';
 import { PaymentsService } from './payments.service.js';
 
 const QUEUE = 'sportgather-billing';
@@ -28,6 +29,7 @@ export class BillingJobs implements OnModuleInit, OnApplicationShutdown {
     @Inject(ENV) private readonly env: Env,
     private readonly billing: BillingService,
     private readonly payments: PaymentsService,
+    private readonly notifications: BillingNotifications,
   ) {}
 
   async onModuleInit() {
@@ -49,6 +51,8 @@ export class BillingJobs implements OnModuleInit, OnApplicationShutdown {
         if (created) this.logger.log(`Tagihan terbit: ${created}`);
         const rec = await this.payments.reconcilePending(new Date());
         if (rec.paid) this.logger.log(`Pembayaran tercatat lewat rekonsiliasi: ${rec.paid}`);
+        await this.notifications.invoicesIssued(new Date());
+        await this.notifications.weeklyOverdueSummary(new Date());
         const { sent } = await this.payments.runReminders(new Date());
         if (sent) this.logger.log(`Pengingat iuran terkirim: ${sent}`);
       },

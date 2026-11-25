@@ -48,6 +48,9 @@ describe('loadEnv', () => {
         SMS_PROVIDER: 'real',
         BANK_VERIFICATION_PROVIDER: 'real',
         PAYOUT_PROVIDER: 'real',
+        PUSH_PROVIDER: 'real',
+        VAPID_PUBLIC_KEY: 'x',
+        VAPID_PRIVATE_KEY: 'y',
       }),
     ).toThrow(/AUTH_SECRET/);
   });

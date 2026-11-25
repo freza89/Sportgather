@@ -227,5 +227,6 @@ export class MyChildrenController {
     MyChildrenController,
   ],
   providers: [PlayersService, RegistrationsService, AuditService],
+  exports: [RegistrationsService],
 })
 export class PlayersModule {}
