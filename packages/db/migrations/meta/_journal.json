@@ -29,6 +29,20 @@
       "when": 1795578562054,
       "tag": "0003_rls_players",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795580684215,
+      "tag": "0004_schedule",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795580684882,
+      "tag": "0005_rls_schedule",
+      "breakpoints": true
     }
   ]
 }

@@ -2,17 +2,25 @@ import { randomUUID } from 'node:crypto';
 import { eq, sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
+  accessToken,
+  attendance,
+  attendanceOp,
   auditLog,
   bankAccount,
   branch,
   competition,
   consent,
   document,
+  event,
+  eventSeries,
   guardianLink,
+  holiday,
   invitation,
   membership,
+  notificationLog,
   organization,
   person,
+  rsvp,
   season,
   staffRole,
   team,
@@ -137,6 +145,55 @@ describe('isolasi tenant (RLS)', () => {
       });
       await db.insert(teamStaff).values({ orgId: org, teamId: tm!.id, staffRoleId: role!.id });
       await db.insert(teamCompetition).values({ orgId: org, teamId: tm!.id, competitionId: c!.id });
+      // Tabel M3: jadwal, RSVP, absensi, token, log notifikasi.
+      const [ser] = await db
+        .insert(eventSeries)
+        .values({
+          orgId: org,
+          teamId: tm!.id,
+          weekday: 2,
+          startTime: '16:00',
+          durationMin: 90,
+          startsOn: '2027-01-01',
+          endsOn: '2027-12-31',
+        })
+        .returning();
+      const [ev] = await db
+        .insert(event)
+        .values({
+          orgId: org,
+          teamId: tm!.id,
+          seriesId: ser!.id,
+          occurrenceDate: '2027-10-12',
+          startsAt: new Date('2027-10-12T09:00:00Z'),
+          endsAt: new Date('2027-10-12T10:30:00Z'),
+        })
+        .returning();
+      await db.insert(holiday).values({ orgId: org, date: '2027-10-15', name: 'Libur' });
+      await db
+        .insert(rsvp)
+        .values({ orgId: org, eventId: ev!.id, membershipId: m!.id, status: 'hadir' });
+      const op = randomUUID();
+      await db.insert(attendance).values({
+        orgId: org,
+        eventId: ev!.id,
+        membershipId: m!.id,
+        status: 'hadir',
+        recordedBy: owner,
+        recordedAt: new Date(),
+        clientOpId: op,
+      });
+      await db.insert(attendanceOp).values({ orgId: org, clientOpId: op });
+      await db.insert(accessToken).values({
+        orgId: org,
+        tokenHash: `tok-${slug}`,
+        personId: owner,
+        purpose: 'rsvp',
+        expiresAt: new Date(Date.now() + 86_400_000),
+      });
+      await db
+        .insert(notificationLog)
+        .values({ orgId: org, dedupeKey: `k-${slug}`, template: 'pengingat_sesi' });
       await db.insert(document).values({
         orgId: org,
         personId: child,
@@ -158,12 +215,27 @@ describe('isolasi tenant (RLS)', () => {
   it('daftar tabel tenant diturunkan dari skema', () => {
     expect(TENANT_TABLES).toEqual(
       expect.arrayContaining([
+        'access_token',
+        'attendance',
+        'attendance_op',
         'audit_log',
         'bank_account',
         'branch',
+        'competition',
         'consent',
+        'document',
+        'event',
+        'event_series',
+        'holiday',
         'invitation',
         'membership',
+        'notification_log',
+        'rsvp',
+        'season',
+        'team',
+        'team_competition',
+        'team_member',
+        'team_staff',
         'staff_role',
       ]),
     );
