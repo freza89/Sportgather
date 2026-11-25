@@ -133,6 +133,7 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 | D-10 | A-01/A-02 logo | Unggah logo | Ditampilkan nonaktif; unggah file dibuat bersama penyimpanan dokumen (M2) |
 | D-11 | A-03 tombol "Undang staf" | Di kanan judul halaman | Di atas tabel staf (fungsi sama) |
 | D-12 | A-03 kolom "Tim" | Nama tim pelatih | "—" sampai modul tim (M2) |
+| D-14 | KU di desain | Campuran (Zaki 12 th → KU12, Raka 16 th → Lulus) | `MAX_N` (ADR-017): Raka 16 th tetap KU16 dan baru lulus pada usia 17 |
 | D-13 | A-02 paket | Akademi Rp749.000 | Klub baru mulai di paket Starter (gratis); perubahan paket manual oleh tim SportGather selama pilot |
 
 ---
@@ -148,3 +149,27 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 - Skema ini adalah skema cadangan PRD (dana ditampung platform), sehingga risiko izin BI (PRD bagian 12, PBI No. 23/6/PBI/2021) harus dinilai konsultan hukum sebelum dibuka ke banyak klub.
 - Dana klub dicatat terpisah per klub dan setiap rupiah bisa ditelusuri ke tagihannya (US-13).
 - Antarmuka `PayoutProvider` tetap dipertahankan, sehingga Split masih bisa dipakai bila Midtrans mengonfirmasinya.
+
+---
+
+## ADR-017 · Aturan KU: "maksimal N tahun" (MAX_N)
+**Status:** Diterima (25 Nov 2026)
+**Konteks:** PRD bertentangan dengan dirinya sendiri. Teks bagian 4 menyebut "KU-N = di bawah N tahun", sedangkan tabel di bagian yang sama menyebut KU12 = 11–12 tahun, KU7 = 6–7 tahun. Desain pun campuran.
+**Keputusan:**
+- Default semua musim baru adalah `MAX_N`: KU-N berisi pemain berusia **maksimal N tahun** pada tanggal acuan. Dengan kelompok dua tahunan, KU12 = 11–12 tahun dan seterusnya.
+- Pemain lebih tua dari kelompok tertua (17 tahun ke atas untuk KU16) berstatus "Lulus".
+- `UNDER_N` tetap tersedia per musim/kompetisi bila penyelenggara memakai konvensi "di bawah N".
+- Usia dihitung dalam tahun penuh pada tanggal acuan. Yang lahir 29 Februari bertambah usia pada 1 Maret di tahun bukan kabisat.
+
+## ADR-018 · RLS untuk data orang (penutup ADR-015)
+**Status:** Diterima (M2)
+**Keputusan:**
+- `person` hanya terbaca bila:
+  - orang itu sendiri yang login;
+  - ia anggota atau staf di klub aktif;
+  - ia anak dari orang yang login; atau
+  - ia wali dari anggota klub aktif.
+- Aturan ini dievaluasi lewat fungsi `sg_person_visible` (SECURITY DEFINER, read-only).
+- `guardian_link` hanya terbaca oleh walinya sendiri atau oleh klub tempat anaknya terdaftar.
+- `person` boleh di-insert tanpa batas (pendaftaran/impor), tetapi id-nya wajib dibuat aplikasi karena `RETURNING` tunduk pada policy baca.
+- `user_account` belum diberi RLS: tabel ini dipakai alur login sebelum ada konteks, dan hanya berisi nomor/email.
