@@ -590,11 +590,13 @@ export class TeamsService {
           .where(eq(season.id, preview.toSeason.id));
         return { applied: false, draftSaved: true };
       }
-      const undecided = preview.rows.filter(
-        (r) =>
-          (r.status === 'perlu_keputusan' || r.status === 'lulus') &&
-          (!decisions.get(r.membershipId) || decisions.get(r.membershipId)!.action === 'auto'),
-      );
+      // Perlu keputusan: wajib ada keputusan eksplisit. Lulus: 'auto' tidak bermakna (tidak ada KU baru).
+      const undecided = preview.rows.filter((r) => {
+        const d = decisions.get(r.membershipId);
+        if (r.status === 'perlu_keputusan') return !d;
+        if (r.status === 'lulus') return !d || d.action === 'auto';
+        return false;
+      });
       if (undecided.length) {
         throw new UnprocessableEntityException(
           `Putuskan dulu: ${undecided
