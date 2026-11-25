@@ -37,6 +37,7 @@ export default defineConfig({
         DATABASE_URL: appUrl.toString(),
         DATABASE_ADMIN_URL: ADMIN_URL,
         WEB_ORIGIN: `http://localhost:${WEB_PORT}`,
+        RATE_LIMIT_PER_MIN: '5000',
       },
     },
     {

@@ -19,6 +19,8 @@ const EnvSchema = z.object({
   /** Penyaluran dana (Iris). Terpisah dari PAYMENT_PROVIDER: Snap sandbox bisa dipakai sebelum Iris aktif. */
   PAYOUT_PROVIDER: z.enum(['mock', 'real']).default('mock'),
   REDIS_URL: z.string().default('redis://localhost:56379'),
+  /** Batas kasar permintaan per IP per menit (e2e menaikkannya karena semua tes dari satu IP). */
+  RATE_LIMIT_PER_MIN: z.coerce.number().int().min(10).default(300),
   /** Server key Midtrans (sandbox/produksi). Default hanya untuk mock lokal. */
   MIDTRANS_SERVER_KEY: z.preprocess(
     (v) => (v === '' ? undefined : v),

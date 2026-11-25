@@ -23,7 +23,7 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024, files: 6, fields: 5 } });
   // Batas kasar per IP; batas OTP per nomor ditegakkan di OtpService.
   await app.register(rateLimit, {
-    max: env.NODE_ENV === 'test' ? 10_000 : 300,
+    max: env.NODE_ENV === 'test' ? 10_000 : env.RATE_LIMIT_PER_MIN,
     timeWindow: '1 minute',
   });
   app.enableCors({ origin: env.WEB_ORIGIN, credentials: true });

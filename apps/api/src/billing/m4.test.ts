@@ -128,6 +128,12 @@ describe('M4 · iuran & pembayaran', () => {
       expect(free).toMatchObject({ status: 'waived', total: 0, discount: 350000 });
       expect(list.body.summary.billed).toMatchObject({ count: 2, amount: 700000 });
       expect(list.body.invoices[0].number).toMatch(/^INV-\d{4}-\d{4}$/);
+      // Terbit setelah tanggal terbit paket → tidak langsung terlambat.
+      for (const i of list.body.invoices) {
+        expect(i.issueDate >= addDays(today, -31)).toBe(true);
+        expect(i.overdueDays).toBe(0);
+        expect(i.dueDate >= today).toBe(true);
+      }
     });
   });
 
@@ -223,7 +229,7 @@ describe('M4 · iuran & pembayaran', () => {
       expect(hist.body).toHaveLength(2);
       const pdf = await h.app.inject({
         method: 'GET',
-        url: `/v1/me/payments/${hist.body[0].paymentId}/receipt.pdf`,
+        url: `/v1/me/payments/${hist.body[0].paymentId}/receipt`,
         headers: { cookie: wali.cookie! },
       });
       expect(pdf.statusCode).toBe(200);
@@ -231,7 +237,7 @@ describe('M4 · iuran & pembayaran', () => {
       expect(pdf.rawPayload.subarray(0, 5).toString()).toBe('%PDF-');
       const theirs = await otherWali.call(
         'GET',
-        `/v1/me/payments/${hist.body[0].paymentId}/receipt.pdf`,
+        `/v1/me/payments/${hist.body[0].paymentId}/receipt`,
       );
       expect(theirs.status).toBe(404);
     });

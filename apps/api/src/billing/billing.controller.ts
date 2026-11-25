@@ -201,7 +201,7 @@ export class BillingController {
     return f.body;
   }
 
-  @Get('invoices/:invoiceId/receipt.pdf')
+  @Get('invoices/:invoiceId/receipt')
   @RequirePermission('billing.manage')
   async receipt(
     @CurrentOrg() org: OrgContext,
@@ -277,7 +277,7 @@ export class MyBillingController {
     return this.payments.checkoutStatus(user, id);
   }
 
-  @Get('payments/:paymentId/receipt.pdf')
+  @Get('payments/:paymentId/receipt')
   async receipt(
     @CurrentUser() user: AuthUser,
     @Param('paymentId', ParseUUIDPipe) id: string,

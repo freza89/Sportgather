@@ -327,6 +327,7 @@ export class BillingService {
       ? plans.filter((p) => issueDateFor(period, p.issueDay) <= opts.onlyDue!)
       : plans;
     if (!issuable.length) return { created: 0, skippedOnLeave: 0, skippedExisting: 0 };
+    const today = todayIso();
     const players = await this.billablePlayers(tx);
     const existing = new Set(
       (
@@ -350,7 +351,10 @@ export class BillingService {
         skippedExisting++;
         continue;
       }
-      const issueDate = issueDateFor(period, plan.issueDay);
+      // Terbit terlambat (mis. paket baru dibuat pertengahan bulan): tanggal terbit = hari ini,
+      // agar tagihan tidak langsung terlambat begitu terbit.
+      const planned = issueDateFor(period, plan.issueDay);
+      const issueDate = planned < today ? today : planned;
       const amounts = invoiceAmounts(plan.amount, pl.scholarshipPct);
       const number = await nextInvoiceNumber(tx, orgId, period);
       const rows = await tx

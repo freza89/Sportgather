@@ -157,6 +157,7 @@ export const DOCUMENT_KIND_LABEL = {
   kia: 'KIA',
   kk: 'Kartu keluarga',
   foto: 'Foto pemain',
+  bukti_bayar: 'Bukti bayar',
 } as const;
 
 export interface PlayerDetail {
