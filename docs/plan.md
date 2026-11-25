@@ -1,6 +1,6 @@
 # SportGather — Rencana Implementasi MVP
 
-> Status: **Disetujui dengan revisi (24 Nov 2026)** · M0 selesai · M1 selesai, menunggu review. Jawaban pertanyaan ada di bagian 8.
+> Status: **Disetujui dengan revisi (24 Nov 2026)** · M0 & M1 selesai · M2 selesai, menunggu review. Jawaban pertanyaan ada di bagian 8.
 > Sumber: `docs/PRD.md` (23 Nov 2026) dan Figma `vwWLfX9ncQFJK9g94jlAdl` (31 layar + user flow).
 > Selisih PRD ↔ desain dicatat di `docs/decisions.md`.
 

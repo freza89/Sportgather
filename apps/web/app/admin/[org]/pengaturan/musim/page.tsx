@@ -1,8 +1,16 @@
-import { Badge, Card } from '@sportgather/ui';
+import type { SeasonDto } from '@sportgather/shared';
+import { SeasonCompetitions } from '@/components/seasons/competitions';
+import { SeasonSetup } from '@/components/seasons/season-setup';
 import { SettingsHeader } from '@/components/settings/settings-header';
+import { apiPage } from '@/lib/api-server';
 
+// A-05 · Musim & kompetisi
 export default async function MusimPage({ params }: { params: Promise<{ org: string }> }) {
   const { org: slug } = await params;
+  const season = await apiPage<SeasonDto | null>(
+    `/orgs/${slug}/seasons/active`,
+    `/admin/${slug}/pengaturan/musim`,
+  );
   return (
     <div className="flex flex-col gap-6">
       <SettingsHeader
@@ -10,15 +18,7 @@ export default async function MusimPage({ params }: { params: Promise<{ org: str
         title="Musim & kompetisi"
         subtitle="Tanggal kompetisi menjadi acuan perhitungan KU"
       />
-      <Card className="flex flex-col items-start gap-3 p-6">
-        <div className="flex gap-2">
-          <Badge tone="brand">A-05</Badge>
-          <Badge tone="info">Dibangun di M2</Badge>
-        </div>
-        <p className="type-body text-fg-secondary">
-          Musim, kompetisi utama, dan aturan KU dibuat bersama modul pemain & KU.
-        </p>
-      </Card>
+      {season ? <SeasonCompetitions slug={slug} season={season} /> : <SeasonSetup slug={slug} />}
     </div>
   );
 }

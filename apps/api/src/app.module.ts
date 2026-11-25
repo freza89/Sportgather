@@ -7,6 +7,10 @@ import { HealthController } from './health/health.controller.js';
 import { IntegrationsModule } from './integrations/integrations.module.js';
 import { MeModule } from './me/me.controller.js';
 import { OrgsModule } from './orgs/orgs.module.js';
+import { PlayersModule } from './players/players.controller.js';
+import { SeasonsModule } from './seasons/seasons.controller.js';
+import { StorageModule } from './storage/storage.module.js';
+import { TeamsModule } from './teams/teams.controller.js';
 
 @Module({})
 export class AppModule {
@@ -19,7 +23,11 @@ export class AppModule {
         DbModule,
         IntegrationsModule,
         AuthModule,
+        StorageModule,
         OrgsModule,
+        SeasonsModule,
+        TeamsModule,
+        PlayersModule,
         MeModule,
         ...(devTools ? [DevModule] : []),
       ],

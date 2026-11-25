@@ -1,8 +1,9 @@
-import { Card } from '@sportgather/ui';
+import type { ChildSummary } from '@sportgather/shared';
 import { notFound } from 'next/navigation';
 import { Placeholder } from '@/components/placeholder';
 import { MobileShell } from '@/components/shell/mobile-shell';
-import { getMe } from '@/lib/api-server';
+import { ChildrenList } from '@/components/wali/children-list';
+import { apiPage, getMe } from '@/lib/api-server';
 import { WALI_NAV } from '@/lib/navigation';
 
 export default async function WaliSection({ params }: { params: Promise<{ section?: string[] }> }) {
@@ -11,6 +12,7 @@ export default async function WaliSection({ params }: { params: Promise<{ sectio
   if (!entry || section.length > 1) notFound();
   const me = await getMe('/wali');
   const home = entry.segment === '';
+  const children = home ? await apiPage<ChildSummary[]>('/me/children', '/wali') : [];
 
   return (
     <MobileShell
@@ -21,13 +23,7 @@ export default async function WaliSection({ params }: { params: Promise<{ sectio
       trailing="bell"
       userName={me.user.fullName}
     >
-      {home ? (
-        <Card className="mb-4 p-5 type-body text-fg-secondary">
-          Belum ada anak yang terdaftar. Pendaftaran anak lewat link dari klub tersedia di milestone
-          M2.
-        </Card>
-      ) : null}
-      <Placeholder entry={entry} />
+      {home ? <ChildrenList items={children} /> : <Placeholder entry={entry} />}
     </MobileShell>
   );
 }

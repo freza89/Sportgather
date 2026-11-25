@@ -1,5 +1,6 @@
 import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
+import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -11,10 +12,17 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.register(env),
     new FastifyAdapter({ trustProxy: env.NODE_ENV === 'production' }),
-    { logger: env.NODE_ENV === 'test' ? false : ['log', 'warn', 'error'] },
+    {
+      logger: env.NODE_ENV === 'test' ? false : ['log', 'warn', 'error'],
+      // Gagal start (mis. storage tidak terjangkau) dilempar sebagai error, bukan process.abort(),
+      // agar pesan jelas dan proses tes tidak ikut mati.
+      abortOnError: false,
+    },
   );
   await app.register(helmet, { contentSecurityPolicy: env.NODE_ENV === 'production' });
   await app.register(cookie);
+  // Unggah dokumen: maks. 5 MB per file, 6 file (satu per anak) per permintaan.
+  await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024, files: 6, fields: 5 } });
   // Batas kasar per IP; batas OTP per nomor ditegakkan di OtpService.
   await app.register(rateLimit, {
     max: env.NODE_ENV === 'test' ? 10_000 : 300,

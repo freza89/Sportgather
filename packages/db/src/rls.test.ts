@@ -5,12 +5,20 @@ import {
   auditLog,
   bankAccount,
   branch,
+  competition,
   consent,
+  document,
+  guardianLink,
   invitation,
   membership,
   organization,
   person,
+  season,
   staffRole,
+  team,
+  teamCompetition,
+  teamMember,
+  teamStaff,
   TENANT_TABLES,
   withContext,
   withTenant,
@@ -39,6 +47,9 @@ describe('isolasi tenant (RLS)', () => {
   const B = randomUUID();
   const ownerA = randomUUID();
   const ownerB = randomUUID();
+  const childA = randomUUID();
+  const childB = randomUUID();
+  const guardianA = randomUUID();
 
   beforeAll(async () => {
     t = await createTestDatabase();
@@ -46,10 +57,16 @@ describe('isolasi tenant (RLS)', () => {
     await db.insert(person).values([
       { id: ownerA, fullName: 'Owner A' },
       { id: ownerB, fullName: 'Owner B' },
+      { id: childA, fullName: 'Anak A', birthDate: '2015-03-12', gender: 'male' },
+      { id: childB, fullName: 'Anak B', birthDate: '2016-01-01', gender: 'female' },
+      { id: guardianA, fullName: 'Wali A' },
     ]);
-    for (const [org, owner, slug] of [
-      [A, ownerA, 'klub-a'],
-      [B, ownerB, 'klub-b'],
+    await db
+      .insert(guardianLink)
+      .values({ guardianPersonId: guardianA, childPersonId: childA, relation: 'mother' });
+    for (const [org, owner, slug, child] of [
+      [A, ownerA, 'klub-a', childA],
+      [B, ownerB, 'klub-b', childB],
     ] as const) {
       await db.insert(organization).values({ id: org, slug, name: slug, city: 'Bandung' });
       await db.insert(branch).values({ orgId: org, name: 'GOR', address: 'Jl. X' });
@@ -81,6 +98,56 @@ describe('isolasi tenant (RLS)', () => {
         version: 'v1',
       });
       await db.insert(auditLog).values({ orgId: org, action: 'test', entityType: 'test' });
+
+      // Tabel M2: musim, kompetisi, tim, anggota, staf tim, dokumen.
+      const [m] = await db
+        .insert(membership)
+        .values({ orgId: org, personId: child, status: 'active' })
+        .returning();
+      const [s1] = await db
+        .insert(season)
+        .values({
+          orgId: org,
+          name: 'Musim 2027',
+          startsOn: '2027-01-01',
+          endsOn: '2027-12-31',
+          status: 'active',
+        })
+        .returning();
+      const [c] = await db
+        .insert(competition)
+        .values({
+          orgId: org,
+          seasonId: s1!.id,
+          name: 'Liga',
+          referenceDate: '2027-06-14',
+          kuGroups: [12, 14],
+        })
+        .returning();
+      const [tm] = await db
+        .insert(team)
+        .values({ orgId: org, seasonId: s1!.id, name: 'KU12 Elite', ku: 12, level: 'Elite' })
+        .returning();
+      await db.insert(teamMember).values({
+        orgId: org,
+        teamId: tm!.id,
+        seasonId: s1!.id,
+        membershipId: m!.id,
+        actualKu: 12,
+      });
+      await db.insert(teamStaff).values({ orgId: org, teamId: tm!.id, staffRoleId: role!.id });
+      await db.insert(teamCompetition).values({ orgId: org, teamId: tm!.id, competitionId: c!.id });
+      await db.insert(document).values({
+        orgId: org,
+        personId: child,
+        kind: 'akta',
+        storageKey: `docs/${slug}`,
+        fileName: 'akta.jpg',
+        mimeType: 'image/jpeg',
+        sizeBytes: 1,
+        sha256: 'x',
+        uploadedBy: owner,
+      });
     }
   });
 
@@ -151,6 +218,40 @@ describe('isolasi tenant (RLS)', () => {
       tx.select().from(organization),
     );
     expect(rows.map((r) => r.id)).toEqual([B]);
+  });
+
+  describe('data orang (person, guardian_link)', () => {
+    const visible = (ctx: { orgId?: string; personId?: string }) =>
+      withContext(t.db, ctx, async (tx) =>
+        (await tx.select({ id: person.id }).from(person)).map((r) => r.id).sort(),
+      );
+
+    it('klub A hanya melihat anggota, staf, dan wali klub A', async () => {
+      const ids = await visible({ orgId: A });
+      expect(ids).toEqual([childA, ownerA, guardianA].sort());
+      expect(ids).not.toContain(childB);
+    });
+
+    it('tanpa konteks tidak ada orang yang terbaca', async () => {
+      expect(await visible({})).toEqual([]);
+    });
+
+    it('wali melihat dirinya dan anaknya saja', async () => {
+      expect(await visible({ personId: guardianA })).toEqual([childA, guardianA].sort());
+    });
+
+    it('relasi wali klub lain tidak terbaca', async () => {
+      const links = await withContext(t.db, { orgId: B }, (tx) => tx.select().from(guardianLink));
+      expect(links).toEqual([]);
+    });
+
+    it('membuat orang baru boleh (pendaftaran), tapi tidak bisa membaca balik tanpa relasi', async () => {
+      const id = randomUUID();
+      await withTenant(t.db, A, undefined, (tx) =>
+        tx.insert(person).values({ id, fullName: 'Pendaftar' }),
+      );
+      expect(await visible({ orgId: A })).not.toContain(id);
+    });
   });
 
   it('tidak bisa menulis baris milik klub lain', async () => {

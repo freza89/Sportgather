@@ -15,6 +15,20 @@
       "when": 1795499560221,
       "tag": "0001_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795578561368,
+      "tag": "0002_players_teams",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795578562054,
+      "tag": "0003_rls_players",
+      "breakpoints": true
     }
   ]
 }

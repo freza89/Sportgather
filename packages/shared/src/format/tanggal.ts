@@ -140,3 +140,11 @@ export function formatBulanTahun(
   const b = isTanggalLokal(value) ? value : bagianDi(value, zona);
   return `${BULAN_PANJANG[b.month - 1]} ${b.year}`;
 }
+
+/** "2015-03-12" → "12 Mar 2015" (atau "12 Maret 2015" bila panjang). Null → "—". */
+export function formatTanggalIso(iso: string | null | undefined, panjang = false): string {
+  if (!iso) return '—';
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  const t = { year: y!, month: m!, day: d! };
+  return panjang ? formatTanggalPanjang(t) : formatTanggal(t);
+}

@@ -39,7 +39,15 @@ Mencoba aplikasi (M1):
 3. Undang staf di **Pengaturan › Staf & peran**. Link undangan muncul di outbox mock.
 4. Rekening mock: nomor berakhiran `0000` ditolak, `9999` menunggu verifikasi, nomor lain lolos.
 
-Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/design` (design system).
+Mencoba M2 (pemain & KU):
+
+1. **Pengaturan › Musim & kompetisi:** buat musim, lalu tambah kompetisi utama. Tanggal kompetisinya menjadi acuan KU (aturan default: KU-N = usia maksimal N tahun).
+2. **Tim & KU › Buat tim:** buat tim, lalu tambahkan pemain. Play-up wajib alasan; play-down hanya oleh owner.
+3. **Pemain › Impor Excel:** impor dari `.xlsx`/`.csv`, atau tambah pemain manual.
+4. **Pendaftaran online:** buka `/daftar/<slug-klub>` (link bisa disalin di Pemain › Verifikasi), lalu verifikasi pendaftarnya di **Pemain › Verifikasi**.
+5. **Kenaikan KU:** Tim & KU › Kenaikan KU musim baru.
+
+Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/wali` (area orang tua), `/design` (design system).
 
 ## Pemeriksaan
 
