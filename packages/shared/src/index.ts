@@ -3,6 +3,7 @@ export * from './auth/rbac.js';
 export * from './format/rupiah.js';
 export * from './format/tanggal.js';
 export * from './format/zona-waktu.js';
+export * from './ku/ku.js';
 export * from './org/org.js';
 export * from './contracts/auth.js';
 export * from './contracts/org.js';
