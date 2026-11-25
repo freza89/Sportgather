@@ -31,3 +31,33 @@ export async function fillOtp(page: Page, phone: string) {
   const msg = await latestMessage(page, phone, 'kode_otp');
   await page.getByLabel('Digit 1').fill(msg.params.kode!);
 }
+
+/** JPEG minimal yang lolos deteksi magic bytes server. */
+export const FAKE_JPEG = Buffer.concat([
+  Buffer.from([0xff, 0xd8, 0xff, 0xe0]),
+  Buffer.from('akta-kelahiran-e2e'),
+]);
+
+/** Daftarkan klub baru lewat A-01; mengembalikan slug. Halaman berakhir di /admin/<slug>. */
+export async function registerClub(
+  page: Page,
+  opts: { ownerPhone: string; clubName: string; ownerName?: string },
+) {
+  await page.goto('/daftar-klub');
+  await page.getByLabel('Nama klub / akademi').fill(opts.clubName);
+  await page.getByLabel('Kota').fill('Bandung');
+  await page.getByLabel('Nama lengkap').fill(opts.ownerName ?? 'Rizky Ramadhan');
+  await page.getByLabel('Nomor WhatsApp').fill(opts.ownerPhone);
+  await page.getByRole('button', { name: 'Kirim kode lewat WhatsApp' }).click();
+  await fillOtp(page, e164(opts.ownerPhone));
+  await expect(page.getByText('Anda akan menjadi owner sebagai')).toBeVisible();
+  await page.getByRole('button', { name: 'Lanjut ke lokasi latihan' }).click();
+  await page.getByLabel('Nama lokasi').fill('GOR Pajajaran');
+  await page.getByLabel('Alamat').fill('Jl. Pajajaran No. 1, Bandung');
+  await page.getByRole('button', { name: 'Lanjut ke rekening' }).click();
+  await page.getByLabel('Bank').selectOption('BCA');
+  await page.getByLabel('Nomor rekening').fill('0123454821');
+  await page.getByRole('button', { name: 'Daftarkan klub' }).click();
+  await expect(page).toHaveURL(/\/admin\/[a-z0-9-]+$/);
+  return page.url().split('/').pop()!;
+}
