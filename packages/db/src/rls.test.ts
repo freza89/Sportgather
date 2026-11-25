@@ -241,25 +241,21 @@ describe('isolasi tenant (RLS)', () => {
       await db
         .insert(checkoutInvoice)
         .values({ orgId: org, checkoutId: co!.id, invoiceId: inv!.id });
-      await db
-        .insert(paymentAttempt)
-        .values({
-          orgId: org,
-          checkoutId: co!.id,
-          orderId: `order-${slug}`,
-          method: 'qris',
-          gross: 350_000,
-        });
-      await db
-        .insert(gatewayEvent)
-        .values({
-          orgId: org,
-          orderId: `order-${slug}`,
-          transactionStatus: 'settlement',
-          statusCode: '200',
-          grossAmount: '350000.00',
-          payload: {},
-        });
+      await db.insert(paymentAttempt).values({
+        orgId: org,
+        checkoutId: co!.id,
+        orderId: `order-${slug}`,
+        method: 'qris',
+        gross: 350_000,
+      });
+      await db.insert(gatewayEvent).values({
+        orgId: org,
+        orderId: `order-${slug}`,
+        transactionStatus: 'settlement',
+        statusCode: '200',
+        grossAmount: '350000.00',
+        payload: {},
+      });
       const [pay] = await db
         .insert(payment)
         .values({
