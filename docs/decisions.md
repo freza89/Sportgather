@@ -343,3 +343,18 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 | D-36 | P-04 navigasi | Tab "Penilaian" di bottom nav dan layar detail dengan tombol kembali | Layar detail dengan tombol kembali (bottom nav disembunyikan agar tombol Simpan tidak tertutup) |
 | D-37 | Logo klub di rapor PDF | Logo | Lencana inisial klub; unggah logo menyusul |
 | D-38 | Edit template skill (DEV-01, P1) | – | API tersedia (`/orgs/:slug/skills`); layar pengaturan menyusul |
+
+---
+
+## ADR-030 · IP klien di balik proxy (`TRUST_PROXY`)
+**Status:** Diterima (M6)
+**Konteks:** Sebelumnya API memakai `trustProxy: true` di production, sehingga entri paling kiri `X-Forwarded-For` (yang dikirim klien sendiri) dipakai sebagai IP. Klien bisa memalsukannya untuk lolos dari rate limit per IP dan mengotori log audit. Fastify 5.12 juga sengaja mematikan kepercayaan berbasis jumlah hop.
+**Keputusan:** API hanya memercayai proxy dengan alamat/CIDR di `TRUST_PROXY` (subnet server web). Load balancer menambahkan IP klien ke `X-Forwarded-For`, web meneruskannya apa adanya, dan API mengambil entri terakhir yang tidak tepercaya. Production menolak start bila `TRUST_PROXY` kosong. API tidak boleh punya alamat publik (`docs/deploy.md`).
+
+## ADR-031 · Seed demo lewat API, bukan SQL
+**Status:** Diterima (M6)
+**Keputusan:** `pnpm --filter api seed:demo` menjalankan API di dalam proses (provider mock, `app.inject`) dan membuat klub fiktif "Belajar Basket Akademi" lewat endpoint yang sama dengan aplikasi: OTP, undangan staf, impor pemain, tim, jadwal, paket iuran, penerbitan tagihan, dan pembayaran Midtrans mock lewat webhook bertanda tangan. Dengan begitu aturan KU, RLS, ledger, dan audit ikut berlaku dan seed tidak bisa basi saat skema berubah. Seed menolak jalan di production atau bila klub sudah ada. Semua nama dan nomor fiktif; data Figma tidak dipakai.
+
+## ADR-032 · Readiness terpisah dari liveness
+**Status:** Diterima (M6)
+**Keputusan:** `GET /health` hanya liveness (tanpa dependensi). `GET /health/ready` menjalankan `select 1` ke database dan mengembalikan 503 bila gagal; dipakai sebagai health check load balancer.
