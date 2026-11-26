@@ -89,14 +89,30 @@ describe('pembagian dana per tagihan (US-13)', () => {
     expect(b.perInvoice.map((p) => p.clubNet)).toEqual([348_542, 248_958]);
   });
 
-  it('QRIS tanpa biaya layanan: biaya Midtrans ditanggung klub, terlacak per tagihan', () => {
+  it('QRIS tanpa biaya layanan: biaya Midtrans ditanggung SportGather, klub tidak dipotong', () => {
     const b = checkoutBreakdown([{ id: 'a', total: 350_000 }], 'qris');
-    expect(b).toMatchObject({ serviceFee: 0, gross: 350_000, midtransFee: 2_450 });
+    expect(b).toMatchObject({
+      serviceFee: 0,
+      gross: 350_000,
+      midtransFee: 2_450,
+      midtransFeeBorneByPlatform: 2_450,
+    });
     expect(b.perInvoice[0]).toMatchObject({
       platformFee: 2_500,
-      midtransFeeBorneByClub: 2_450,
-      clubNet: 345_050,
+      midtransFeeBorneByClub: 0,
+      clubNet: 347_500,
     });
+  });
+
+  it('QRIS dengan biaya layanan aktif: wali yang membayar, SportGather tidak menanggung', () => {
+    const b = checkoutBreakdown([{ id: 'a', total: 350_000 }], 'qris', {
+      platformFee: 2500,
+      qrisSurchargeEnabled: true,
+    });
+    expect(b).toMatchObject({ serviceFee: 2_450, gross: 352_450, midtransFeeBorneByPlatform: 0 });
+    // Selisih pembulatan persen atas gross (Rp18) tetap ditanggung klub, seperti e-wallet.
+    expect(b.perInvoice[0]!.midtransFeeBorneByClub).toBe(b.midtransFee - b.serviceFee);
+    expect(b.clubNet).toBe(350_000 - 2_500 - (b.midtransFee - b.serviceFee));
   });
 
   it('setiap rupiah tertelusur: gross = klub + fee platform + biaya Midtrans', () => {
@@ -108,7 +124,9 @@ describe('pembagian dana per tagihan (US-13)', () => {
         ],
         method,
       );
-      expect(b.clubNet + b.platformFee + b.midtransFee, method).toBe(b.gross);
+      expect(b.clubNet + b.platformFee + b.midtransFee - b.midtransFeeBorneByPlatform, method).toBe(
+        b.gross,
+      );
     }
   });
 });

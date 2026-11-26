@@ -78,6 +78,11 @@ Mencoba M5 (komunikasi, pembinaan, laporan):
 5. **Wali:** Beranda (tagihan & pengumuman), **Rapor** (unduh PDF), **Profil** (izin foto, notifikasi WhatsApp/aplikasi, unduh data, minta hapus data). Permintaan hapus muncul di **Pengaturan › Data & privasi**.
 6. **Notifikasi aplikasi (Web Push):** `pnpm --filter api vapid:generate`, salin hasilnya ke `.env`, jalankan ulang API, lalu aktifkan dari Profil wali (butuh HTTPS atau `localhost`).
 
+M6 (siap pilot):
+
+1. **Data demo fiktif:** `pnpm --filter api seed:demo` (database kosong; menolak jalan di production). Klub `belajar-basket-akademi` berisi 36 pemain, 5 tim + jadwal, tagihan bulan berjalan (wali 1–12 sudah bayar). Owner `081299000001`, admin `081299000002`, pelatih `081299000011`–`13`, wali `081299100001`–`024`. OTP dibaca di `/api/dev/outbox`.
+2. **Deploy & operasional:** [`docs/deploy.md`](docs/deploy.md) (region Jakarta), [`docs/runbook.md`](docs/runbook.md), [`docs/security-checklist.md`](docs/security-checklist.md).
+
 Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/wali` (area orang tua), `/design` (design system).
 
 ## Pemeriksaan
@@ -88,7 +93,7 @@ pnpm --filter @sportgather/e2e e2e:install   # sekali, unduh Chromium
 pnpm --filter @sportgather/e2e e2e
 ```
 
-CI (`.github/workflows/ci.yml`) menjalankan semua pemeriksaan di atas pada setiap PR dan push ke `main`.
+CI (`.github/workflows/ci.yml`) menjalankan semua pemeriksaan di atas pada setiap PR dan push ke `main`, ditambah secret scan (gitleaks, seluruh riwayat) dan `pnpm audit --prod --audit-level high`.
 
 ## Aturan kerja
 

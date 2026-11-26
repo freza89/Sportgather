@@ -11,7 +11,8 @@ import type { Env } from './config/env.js';
 export async function createApp(env: Env): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.register(env),
-    new FastifyAdapter({ trustProxy: env.NODE_ENV === 'production' }),
+    // Hanya proxy di TRUST_PROXY yang dipercaya; trustProxy=true membuat IP klien bisa dipalsukan.
+    new FastifyAdapter({ trustProxy: env.TRUST_PROXY || false }),
     {
       logger:
         env.NODE_ENV === 'test' && !process.env.SG_TEST_LOG ? false : ['log', 'warn', 'error'],
@@ -30,7 +31,7 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
     timeWindow: '1 minute',
   });
   app.enableCors({ origin: env.WEB_ORIGIN, credentials: true });
-  app.setGlobalPrefix('v1', { exclude: ['health'] });
+  app.setGlobalPrefix('v1', { exclude: ['health', 'health/ready'] });
   app.enableShutdownHooks();
 
   const openapi = new DocumentBuilder()
