@@ -1,9 +1,32 @@
 import { randomBytes } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import postgres from 'postgres';
 import { createDb, type DbHandle } from './client.js';
 import { runMigrations } from './migrate.js';
 
-const APP_PASSWORD = 'sg_app_test';
+/**
+ * Password role sg_app untuk tes & e2e. Role ini berlaku untuk seluruh server Postgres,
+ * jadi tes yang memasang password lain membuat API dev lokal gagal login ke database.
+ * Karena itu tes memakai DB_APP_PASSWORD yang sama dengan dev (env, atau .env di root repo).
+ * Di CI tidak ada .env, jadi dipakai nilai bawaan.
+ */
+export function appPasswordForTests(): string {
+  if (process.env.DB_APP_PASSWORD) return process.env.DB_APP_PASSWORD;
+  try {
+    const env = readFileSync(new URL('../../../.env', import.meta.url), 'utf8');
+    const line = env.split(/\r?\n/).find((l) => l.startsWith('DB_APP_PASSWORD='));
+    const value = line
+      ?.slice('DB_APP_PASSWORD='.length)
+      .trim()
+      .replace(/^['"]|['"]$/g, '');
+    if (value) return value;
+  } catch {
+    // Tidak ada .env (CI).
+  }
+  return 'sg_app_test';
+}
+
+const APP_PASSWORD = appPasswordForTests();
 const MIGRATION_LOCK = 7_301_2026;
 
 export interface TestDatabase extends DbHandle {

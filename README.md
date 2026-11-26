@@ -100,6 +100,8 @@ pnpm --filter @sportgather/e2e e2e:install   # sekali, unduh Chromium
 pnpm --filter @sportgather/e2e e2e
 ```
 
+Tes & e2e memakai password `sg_app` yang sama dengan dev (`DB_APP_PASSWORD` di `.env`), jadi aman dijalankan saat `pnpm dev` hidup.
+
 CI (`.github/workflows/ci.yml`) menjalankan semua pemeriksaan di atas pada setiap PR dan push ke `main`, ditambah secret scan (gitleaks, seluruh riwayat) dan `pnpm audit --prod --audit-level high`.
 
 ## Aturan kerja

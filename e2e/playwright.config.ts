@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { appPasswordForTests } from '@sportgather/db/testing';
 
 const WEB_PORT = 3100;
 const API_PORT = 4100;
@@ -7,7 +8,7 @@ const ADMIN_URL =
   'postgres://sportgather:sportgather@localhost:55432/sportgather';
 const appUrl = new URL(ADMIN_URL);
 appUrl.username = 'sg_app';
-appUrl.password = 'sg_app_e2e';
+appUrl.password = appPasswordForTests();
 appUrl.pathname = '/sportgather_e2e';
 
 export const API_BASE = `http://localhost:${API_PORT}`;
