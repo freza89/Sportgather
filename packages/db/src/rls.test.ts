@@ -2,6 +2,9 @@ import { randomUUID } from 'node:crypto';
 import { eq, sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
+  coachExperience,
+  coachLicense,
+  coachProfile,
   accessToken,
   checkout,
   checkoutInvoice,
@@ -357,6 +360,22 @@ describe('isolasi tenant (RLS)', () => {
       await db
         .insert(dataRequest)
         .values({ orgId: org, requesterPersonId: owner, membershipId: m!.id });
+      await db
+        .insert(coachProfile)
+        .values({ orgId: org, staffRoleId: role!.id, headline: 'Pelatih kepala' });
+      await db.insert(coachExperience).values({
+        orgId: org,
+        staffRoleId: role!.id,
+        title: 'Asisten pelatih',
+        organization: 'Klub contoh',
+        startYear: 2020,
+      });
+      await db.insert(coachLicense).values({
+        orgId: org,
+        staffRoleId: role!.id,
+        name: 'Lisensi Pelatih Level C',
+        status: 'in_progress',
+      });
     }
   });
 

@@ -90,6 +90,8 @@ export interface StaffDto {
   phone: string | null;
   role: string;
   status: string;
+  /** Ringkasan lisensi (M7); null bila belum ada lisensi. */
+  licenses?: { total: number; pending: number; expired: number; expiring: number } | null;
 }
 
 export interface InvitationPreview {

@@ -223,6 +223,14 @@ Perkiraan urutan risiko: tes isolasi RLS (M1) dan webhook idempoten (M4) adalah 
 
 ---
 
+### Tambahan setelah MVP
+
+| Milestone | Isi | Branch |
+| --- | --- | --- |
+| **M7 — Profil & lisensi pelatih** | CV pelatih (biodata, foto, pengalaman), lisensi dengan file opsional, verifikasi admin, pengingat masa berlaku, ringkasan untuk wali (ADR-034) | `m7-coach-profile` |
+
+---
+
 ## 8. Keputusan & pertanyaan
 
 ### Sudah diputuskan (24 Nov 2026)

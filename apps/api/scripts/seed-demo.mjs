@@ -90,9 +90,18 @@ const jakarta = (offsetDays = 0) =>
 const today = jakarta();
 const year = Number(today.slice(0, 4));
 
+const onlyCoachProfiles = process.argv.includes('--coach-profiles');
+/** Sesi staf yang sudah login (OTP baru dibatasi 30 detik per nomor). */
+const sessions = new Map();
+
 try {
   const existing = await app.inject({ method: 'GET', url: `/v1/public/orgs/${CLUB_SLUG}` });
-  if (existing.statusCode === 200) {
+  if (onlyCoachProfiles) {
+    // Tambahkan profil & lisensi pelatih (M7) ke klub demo yang sudah ada.
+    if (existing.statusCode !== 200)
+      throw new Error('Klub demo belum ada. Jalankan seed:demo dulu.');
+    await seedCoachProfiles(await new Client().login(OWNER.phone), `/v1/orgs/${CLUB_SLUG}`);
+  } else if (existing.statusCode === 200) {
     console.error(
       `Klub "${CLUB_NAME}" (/${CLUB_SLUG}) sudah ada. Kosongkan database dulu bila ingin seed ulang.`,
     );
@@ -148,6 +157,7 @@ async function seed(owner) {
     const token = outbox.latest(e164(s.phone), 'undangan_staf').params.link.split('/').pop();
     const c = await new Client().login(s.phone);
     await c.call('POST', '/v1/invitations/accept', { token });
+    sessions.set(s.phone, c);
   }
   const staff = await owner.call('GET', `${base}/staff`);
   const staffId = (name) => staff.find((s) => s.fullName === name).id;
@@ -288,6 +298,8 @@ async function seed(owner) {
   }
   console.log(`${paid} tagihan lunas lewat pembayaran online (mock)`);
 
+  await seedCoachProfiles(owner, base);
+
   await owner.call('POST', `${base}/announcements`, {
     title: 'Selamat datang di SportGather',
     body: 'Jadwal latihan, tagihan iuran, dan rapor kini bisa dilihat di aplikasi. Hubungi admin bila ada pertanyaan.',
@@ -300,4 +312,115 @@ Selesai. Login (OTP dari outbox mock: /api/dev/outbox):
   Admin   ${ADMIN.phone}
   Pelatih ${COACHES.map((c) => c.phone).join(', ')} → /pelatih/${slug}
   Wali    081299100001 … 081299100024 → /wali  (wali 1–12 sudah bayar, 13–24 belum)`);
+}
+
+/** M7: CV & lisensi pelatih demo (fiktif). Satu lisensi menunggu verifikasi, satu segera habis. */
+async function seedCoachProfiles(owner, base) {
+  const staff = await owner.call('GET', `${base}/staff`);
+  const id = (name) => staff.find((s) => s.fullName === name).id;
+  const profiles = [
+    {
+      name: COACHES[0].name,
+      profile: {
+        headline: 'Pelatih KU8 & KU10',
+        specialization: 'Fundamental & motorik anak',
+        yearsCoaching: 4,
+        city: 'Bandung',
+        bio: 'Membina pemain usia dini dengan pendekatan bermain sambil belajar.',
+        education: 'S1 Pendidikan Jasmani (demo)',
+      },
+      experiences: [
+        { title: 'Pelatih kepala KU10', organization: CLUB_NAME, startYear: year - 2 },
+        {
+          title: 'Asisten pelatih',
+          organization: 'Klub Basket Contoh',
+          startYear: year - 4,
+          endYear: year - 2,
+        },
+      ],
+      licenses: [
+        {
+          name: 'Lisensi Pelatih Bola Basket Level C',
+          issuer: 'PERBASI',
+          level: 'C',
+          issuedOn: jakarta(-700),
+          expiresOn: jakarta(400),
+        },
+        {
+          name: 'Lisensi Pelatih Bola Basket Level B',
+          issuer: 'PERBASI',
+          level: 'B',
+          inProgress: true,
+        },
+      ],
+    },
+    {
+      name: COACHES[1].name,
+      profile: {
+        headline: 'Pelatih kepala KU12',
+        specialization: 'Pertahanan & transisi',
+        yearsCoaching: 6,
+        city: 'Bandung',
+        bio: 'Mantan pemain liga mahasiswa; fokus pada disiplin dan kerja sama tim.',
+        playingBackground: 'Pemain tim universitas (demo)',
+      },
+      experiences: [{ title: 'Pelatih kepala KU12', organization: CLUB_NAME, startYear: year - 3 }],
+      licenses: [
+        {
+          name: 'FIBA Coaching Level 1',
+          issuer: 'FIBA',
+          level: '1',
+          issuedOn: jakarta(-1000),
+          expiresOn: jakarta(20),
+        },
+      ],
+    },
+    {
+      name: COACHES[2].name,
+      profile: {
+        headline: 'Pelatih KU14 & KU16',
+        specialization: 'Taktik & persiapan kompetisi',
+        yearsCoaching: 9,
+        city: 'Bandung',
+      },
+      experiences: [
+        {
+          title: 'Pelatih tim pelajar',
+          organization: 'SMA Contoh Bandung',
+          startYear: year - 9,
+          endYear: year - 1,
+        },
+      ],
+      licenses: [
+        {
+          name: 'Lisensi Pelatih Bola Basket Level C',
+          issuer: 'PERBASI',
+          level: 'C',
+          issuedOn: jakarta(-1200),
+          expiresOn: jakarta(500),
+        },
+      ],
+    },
+  ];
+  for (const p of profiles) {
+    const url = `${base}/coach-profiles/${id(p.name)}`;
+    const current = await owner.call('GET', url);
+    if (current.licenses.length || current.experiences.length) {
+      console.log(`Profil ${p.name} sudah terisi, dilewati.`);
+      continue;
+    }
+    await owner.call('PUT', url, p.profile);
+    for (const e of p.experiences) await owner.call('POST', `${url}/experiences`, e);
+    for (const l of p.licenses) await owner.call('POST', `${url}/licenses`, l);
+  }
+  // Lisensi dari pelatih sendiri → menunggu verifikasi admin.
+  const fajar = sessions.get(COACHES[2].phone) ?? (await new Client().login(COACHES[2].phone));
+  const mine = await fajar.call('GET', `${base}/coach-profiles/me`);
+  if (mine.licenses.some((l) => l.name === 'Lisensi Wasit Bola Basket')) return;
+  await fajar.call('POST', `${base}/coach-profiles/me/licenses`, {
+    name: 'Lisensi Wasit Bola Basket',
+    issuer: 'PERBASI',
+    issuedOn: jakarta(-90),
+  });
+  console.log('Profil & lisensi 3 pelatih dibuat (1 menunggu verifikasi, 1 segera habis)');
 }

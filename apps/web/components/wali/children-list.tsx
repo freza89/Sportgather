@@ -1,7 +1,8 @@
 'use client';
 
 import { kuLabel, type ChildSummary } from '@sportgather/shared';
-import { Alert, Avatar, Badge, Button, Card, IconUpload } from '@sportgather/ui';
+import { Alert, Avatar, Badge, Card, IconUpload } from '@sportgather/ui';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { apiUpload, MAX_UPLOAD_BYTES } from '@/lib/api-client';
@@ -87,12 +88,17 @@ export function ChildrenList({ items }: { items: ChildSummary[] }) {
               </p>
             ) : null}
             {c.status === 'rejected' ? <Reupload child={c} /> : null}
+            {c.status === 'active' && c.teamName ? (
+              <Link
+                href={`/wali/pelatih/${c.membershipId}`}
+                className="self-start type-caption-bold text-brand"
+              >
+                Kenali pelatih tim ›
+              </Link>
+            ) : null}
           </Card>
         );
       })}
-      <Button variant="ghost" className="self-start" disabled>
-        Jadwal, tagihan & rapor muncul di sini (M3–M5)
-      </Button>
     </div>
   );
 }

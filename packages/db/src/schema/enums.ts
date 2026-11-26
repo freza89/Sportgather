@@ -88,3 +88,10 @@ export const announcementStatusEnum = pgEnum('announcement_status', [
 ]);
 export const announcementSourceEnum = pgEnum('announcement_source', ['manual', 'schedule_change']);
 export const dataRequestStatusEnum = pgEnum('data_request_status', ['pending', 'done', 'rejected']);
+/** Lisensi pelatih (M7): in_progress = masih proses mengambil lisensi (file tidak wajib). */
+export const coachLicenseStatusEnum = pgEnum('coach_license_status', [
+  'in_progress',
+  'pending',
+  'verified',
+  'rejected',
+]);

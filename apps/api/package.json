@@ -12,7 +12,8 @@
     "test": "vitest run",
     "midtrans:check": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env scripts/midtrans-sandbox-check.mjs",
     "vapid:generate": "node scripts/vapid-generate.mjs",
-    "seed:demo": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env scripts/seed-demo.mjs"
+    "seed:demo": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env scripts/seed-demo.mjs",
+    "seed:demo:coaches": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env scripts/seed-demo.mjs --coach-profiles"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1177.0",

@@ -367,3 +367,14 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 - Untuk tagihan besar, biaya QRIS bisa melebihi fee platform (di atas ±Rp357.000 dengan fee Rp2.500), jadi SportGather rugi tipis per transaksi. Pantau di laporan keuangan platform.
 - Selisih pembulatan persen untuk metode lain (e-wallet) tetap ditanggung klub.
 - Bila biaya layanan QRIS kelak diaktifkan, wali yang membayar dan aturan ini tidak berlaku.
+
+## ADR-034 · Profil/CV & lisensi pelatih (M7)
+**Status:** Diterima (26 Nov 2026, permintaan pemilik produk; di luar PRD MVP awal)
+**Keputusan:**
+- **Data:** `coach_profile` (biodata & ringkasan CV, foto terenkripsi), `coach_experience` (riwayat pengalaman), `coach_license` (nama, penerbit, level, nomor, tanggal terbit, masa berlaku, file sertifikat opsional). Semua per staf per klub, dengan RLS `tenant_isolation`.
+- **Siapa mengisi:** owner/admin bisa mengubah profil staf (admin tidak bisa mengubah owner/admin lain), dan setiap staf bisa mengubah profilnya sendiri (`/coach-profiles/me`, area pelatih › Tim › Profil & lisensi saya).
+- **Status lisensi:** `in_progress` (masih proses mengambil lisensi; file & tanggal tidak wajib) → `pending` (diinput/diubah pelatih, menunggu verifikasi) → `verified` / `rejected` (wajib alasan). Lisensi yang diinput owner/admin untuk staf lain langsung `verified`. Lisensi admin untuk dirinya sendiri diverifikasi owner. Pelatih yang mengubah lisensi terverifikasi mengembalikannya ke `pending`. Status tampilan menambahkan `expired` dan `expiring` (≤30 hari) dari masa berlaku.
+- **File:** PDF/JPG/PNG maks. 5 MB, dienkripsi seperti dokumen anak (ADR-019), dibuka lewat API, dan setiap pembukaan dicatat di audit (`coach_license.file_viewed`).
+- **Notifikasi WhatsApp:** `lisensi_perlu_verifikasi` ke owner/admin saat pelatih menambah/mengubah lisensi; `lisensi_diperiksa` ke pelatih setelah diverifikasi/ditolak; `lisensi_akan_habis` (H-30) dan `lisensi_kedaluwarsa` ke pelatih + owner/admin, sekali per tahap, pukul 09.00–21.00 WIB (job tiap jam, `JOBS_ENABLED`). Template perlu didaftarkan ke BSP/Meta.
+- **Wali:** hanya melihat ringkasan pelatih tim yang sedang diikuti anaknya (nama, foto, judul, spesialisasi, lama melatih, bio, maks. 5 pengalaman, dan lisensi **terverifikasi yang masih berlaku**). Nomor lisensi, file, lisensi yang masih proses/menunggu/ditolak, dan kontak tidak ditampilkan.
+- **Daftar staf (A-03):** kolom Lisensi menandai yang kedaluwarsa, perlu verifikasi, atau segera habis.

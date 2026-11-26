@@ -83,6 +83,13 @@ M6 (siap pilot):
 1. **Data demo fiktif:** `pnpm --filter api seed:demo` (database kosong; menolak jalan di production). Klub `belajar-basket-akademi` berisi 36 pemain, 5 tim + jadwal, tagihan bulan berjalan (wali 1–12 sudah bayar). Owner `081299000001`, admin `081299000002`, pelatih `081299000011`–`13`, wali `081299100001`–`024`. OTP dibaca di `/api/dev/outbox`.
 2. **Deploy & operasional:** [`docs/deploy.md`](docs/deploy.md) (region Jakarta), [`docs/runbook.md`](docs/runbook.md), [`docs/security-checklist.md`](docs/security-checklist.md).
 
+M7 (profil & lisensi pelatih):
+
+1. **Admin:** Pengaturan › Staf & peran → klik nama staf untuk membuka profil (biodata, foto, pengalaman, lisensi). Kolom **Lisensi** menandai yang perlu verifikasi atau hampir habis. Buka file sertifikat lalu **Verifikasi** atau **Tolak**.
+2. **Pelatih:** `/pelatih/<slug>/tim` › **Profil & lisensi saya**. Lisensi yang masih proses bisa dicatat tanpa file; lisensi baru dari pelatih menunggu verifikasi admin.
+3. **Wali:** Beranda › **Kenali pelatih** di kartu anak (hanya lisensi terverifikasi & masih berlaku).
+4. **Data demo:** `pnpm --filter api seed:demo:coaches` menambahkan profil pelatih ke klub demo yang sudah ada (`seed:demo` baru sudah menyertakannya).
+
 Halaman lain: `/masuk` (login OTP), `/pilih-klub`, `/wali` (area orang tua), `/design` (design system).
 
 ## Pemeriksaan

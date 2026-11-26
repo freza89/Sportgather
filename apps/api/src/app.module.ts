@@ -1,5 +1,6 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 import { BillingModule } from './billing/billing.controller.js';
+import { CoachingModule } from './coaching/coaching.controller.js';
 import { AnnouncementsModule } from './announcements/announcements.controller.js';
 import { DevelopmentModule } from './development/development.controller.js';
 import { ReportsModule } from './reports/reports.controller.js';
@@ -33,6 +34,7 @@ export class AppModule {
         OrgsModule,
         SeasonsModule,
         TeamsModule,
+        CoachingModule,
         PlayersModule,
         ScheduleModule,
         BillingModule,

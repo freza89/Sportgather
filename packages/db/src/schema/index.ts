@@ -4,3 +4,4 @@ export * from './tenant.js';
 export * from './schedule.js';
 export * from './billing.js';
 export * from './engagement.js';
+export * from './coaching.js';
