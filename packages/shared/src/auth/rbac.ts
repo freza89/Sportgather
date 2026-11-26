@@ -44,6 +44,8 @@ export const PERMISSIONS = {
   'announcement.send_club': ['owner', 'admin'],
   'announcement.send_team': ['owner', 'admin', 'coach', 'team_manager'],
   'audit.view': ['owner', 'admin'],
+  /** M7: mengubah profil/CV staf lain & memverifikasi lisensi. Staf selalu bisa mengubah profilnya sendiri. */
+  'coach_profile.manage': ['owner', 'admin'],
 } as const satisfies Record<string, readonly StaffRole[]>;
 
 export type Permission = keyof typeof PERMISSIONS;

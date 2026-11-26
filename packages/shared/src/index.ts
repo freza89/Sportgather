@@ -15,3 +15,4 @@ export * from './billing/billing.js';
 export * from './contracts/billing.js';
 export * from './development/development.js';
 export * from './contracts/engagement.js';
+export * from './contracts/coaching.js';
