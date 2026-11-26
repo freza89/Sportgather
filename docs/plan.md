@@ -238,14 +238,14 @@ Perkiraan urutan risiko: tes isolasi RLS (M1) dan webhook idempoten (M4) adalah 
 ### Masih terbuka
 
 13. ~~Model penarikan dana~~ → **diputuskan 24 Nov 2026: penarikan manual oleh owner kapan saja.** Lihat ADR-016.
-14. **Biaya layanan QRIS** → sedang dicek ke Midtrans oleh tim. Sambil menunggu, biaya layanan dibuat bisa dikonfigurasi per metode bayar, dan untuk QRIS bisa dimatikan tanpa ubah kode. Lihat ADR-016.
+14. ~~Biaya layanan QRIS~~ → **diputuskan 26 Nov 2026: biaya QRIS ditanggung SportGather**; wali tidak dikenai biaya layanan QRIS dan klub tidak dipotong. Lihat ADR-033.
 6. **Login staf.** Usulan: OTP WhatsApp untuk semua peran, plus email + password + 2FA opsional untuk owner/admin.
 7. **Jadwal cair di skema Split.** Terjawab oleh Q13 bila memakai model penarikan.
 8. **Akun pemain KU13+.** Usulan: tidak dibuat di MVP.
 9. **Nama produk.** Usulan: SportGather, dengan domain `sportgather.id`.
 10. **BSP WhatsApp & SMS.** Memakai mock dulu sampai vendor dipilih.
 11. **Penomoran tagihan.** Usulan: `INV-{YYMM}-{urut 4 digit per org per bulan}`.
-12. **Hosting/CI.** Usulan: GitHub Actions; cloud region Jakarta dipilih di M6.
+12. **Hosting/CI.** GitHub Actions. Cloud: **sementara lokal** (26 Nov 2026); AWS region Jakarta disiapkan pemilik produk nanti (`docs/deploy.md`).
 
 Tidak ada pertanyaan yang menghalangi milestone. Jawaban Midtrans soal QRIS dibutuhkan sebelum pilot memakai pembayaran sungguhan.
 

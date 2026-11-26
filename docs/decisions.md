@@ -144,7 +144,7 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 **Keputusan:**
 - **Saldo klub.** Bagian klub dari setiap pembayaran online masuk ke saldo klub di ledger. Saldo baru bisa ditarik setelah transaksinya settle di Midtrans.
 - **Penarikan.** Owner menekan "Tarik dana" kapan saja; ada minimal penarikan yang bisa dikonfigurasi. Dana dikirim lewat Iris, dan biaya transfer dipotong dari jumlah yang ditarik. Penarikan ditolak bila rekening belum terverifikasi.
-- **Biaya layanan wali.** Tarifnya dikonfigurasi per metode bayar (QRIS, VA, e-wallet). Biaya untuk QRIS bisa dimatikan lewat konfigurasi sambil menunggu konfirmasi Midtrans soal aturan Bank Indonesia. Bila dimatikan, biaya QRIS ditanggung klub dan dipotong dari saldo.
+- **Biaya layanan wali.** Tarifnya dikonfigurasi per metode bayar (QRIS, VA, e-wallet). Biaya untuk QRIS bisa dimatikan lewat konfigurasi sambil menunggu konfirmasi Midtrans soal aturan Bank Indonesia. Bila dimatikan, biaya QRIS ditanggung SportGather (ADR-033); sebelumnya ditanggung klub.
 **Konsekuensi:**
 - Skema ini adalah skema cadangan PRD (dana ditampung platform), sehingga risiko izin BI (PRD bagian 12, PBI No. 23/6/PBI/2021) harus dinilai konsultan hukum sebelum dibuka ke banyak klub.
 - Dana klub dicatat terpisah per klub dan setiap rupiah bisa ditelusuri ke tagihannya (US-13).
@@ -254,7 +254,7 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 - **Sumber kebenaran status:** status bayar tidak pernah diambil dari isi notifikasi. Webhook memverifikasi `signature_key`, menyimpan event mentah (`gateway_event`, dedupe per order+status), lalu mengecek ulang lewat Status API. Halaman "selesai bayar" juga mengecek ulang, sehingga pembayaran tercatat walau webhook tidak sampai (mis. lokal).
 - **Idempoten:** penerapan settlement mengunci baris checkout (`FOR UPDATE`); notifikasi ganda atau bersamaan hanya diproses sekali. Nominal yang tidak cocok tidak diterapkan dan dicatat di audit.
 - **Tagihan yang ternyata sudah lunas** (mis. dicatat manual saat wali sedang bayar online): dana tetap masuk ledger klub dan dicatat di audit (`doublePaid`) untuk dikembalikan manual.
-- **Ledger** append-only per tagihan: `club_gross` +total, `platform_fee` −bagian fee, `midtrans_fee` −bagian biaya Midtrans yang ditanggung klub (QRIS saat biaya layanannya dimatikan). Pembagian memakai sisa terbesar, jadi setiap rupiah bisa ditelusuri ke tagihannya (US-13). Pembayaran manual tidak masuk ledger.
+- **Ledger** append-only per tagihan: `club_gross` +total, `platform_fee` −bagian fee, `midtrans_fee` −bagian biaya Midtrans yang ditanggung klub (kini hanya selisih pembulatan persen, mis. e-wallet; QRIS ditanggung SportGather sejak ADR-033). Pembagian memakai sisa terbesar, jadi setiap rupiah bisa ditelusuri ke tagihannya (US-13). Pembayaran manual tidak masuk ledger.
 - **Penarikan:** dikunci per klub (advisory lock). Saldo dicadangkan dulu lewat entri ledger negatif, lalu Iris dipanggil. Bila gagal, dibuat entri balik. Rekening belum terverifikasi berarti dana ditahan (FEE-07).
 - **Rekonsiliasi berkala:** job (tiap 15 menit, `JOBS_ENABLED`) mengecek ulang checkout pending berumur 5 menit s.d. 2 hari ke Status API. Jaring pengaman bila webhook tidak sampai/ditolak dan wali tidak kembali ke halaman status.
 - **`PAYOUT_PROVIDER` terpisah dari `PAYMENT_PROVIDER`**, sehingga Snap sandbox bisa dipakai sebelum akses Iris tersedia.
@@ -358,3 +358,12 @@ Angka di desain (fee Midtrans 1%, fee platform Rp2.500, nama pemain dan wali) ad
 ## ADR-032 · Readiness terpisah dari liveness
 **Status:** Diterima (M6)
 **Keputusan:** `GET /health` hanya liveness (tanpa dependensi). `GET /health/ready` menjalankan `select 1` ke database dan mengembalikan 503 bila gagal; dipakai sebagai health check load balancer.
+
+## ADR-033 · Biaya QRIS ditanggung SportGather
+**Status:** Diterima (26 Nov 2026, keputusan pemilik produk; menutup pertanyaan terbuka #14)
+**Keputusan:** Selama biaya layanan QRIS ke wali dimatikan (`QRIS_SERVICE_FEE_ENABLED=false`, default), biaya Midtrans QRIS (0,7%) **ditanggung SportGather**, bukan klub. Wali membayar sebesar tagihan; klub menerima tagihan − fee platform, sama seperti metode lain. Contoh tagihan Rp350.000: wali bayar Rp350.000, klub menerima Rp347.500, SportGather menerima fee Rp2.500 dan menanggung biaya QRIS Rp2.450 (bersih Rp50).
+**Konsekuensi:**
+- `checkoutBreakdown` mengembalikan `midtransFeeBorneByPlatform`. Nilai ini tidak masuk ledger klub (ledger hanya mencatat uang klub); biaya platform bisa dihitung dari checkout QRIS dengan `service_fee = 0`.
+- Untuk tagihan besar, biaya QRIS bisa melebihi fee platform (di atas ±Rp357.000 dengan fee Rp2.500), jadi SportGather rugi tipis per transaksi. Pantau di laporan keuangan platform.
+- Selisih pembulatan persen untuk metode lain (e-wallet) tetap ditanggung klub.
+- Bila biaya layanan QRIS kelak diaktifkan, wali yang membayar dan aturan ini tidak berlaku.

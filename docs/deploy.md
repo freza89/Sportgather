@@ -113,7 +113,7 @@ Staging boleh diisi data **fiktif** dengan `pnpm --filter api seed:demo` (butuh 
 - [ ] `/health/ready` hijau di LB; hanya satu instance dengan `JOBS_ENABLED=true`
 - [ ] Bucket dokumen privat, SSE, versioning, block public access
 - [ ] Backup Postgres + PITR aktif dan **restore pernah diuji** (lihat runbook)
-- [ ] Webhook Midtrans terverifikasi (signature cocok); konfirmasi QRIS (ADR-016)
+- [ ] Webhook Midtrans terverifikasi (signature cocok); `QRIS_SERVICE_FEE_ENABLED=false` (biaya QRIS ditanggung SportGather, ADR-033)
 - [ ] Iris & BSP WhatsApp aktif → semua provider `real`, `NODE_ENV=production`
 - [ ] Pentest eksternal & review UU PDP selesai (`docs/security-checklist.md`)
 - [ ] Alert minimum aktif (lihat runbook)

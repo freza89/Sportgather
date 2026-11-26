@@ -117,7 +117,7 @@ export interface FeePolicy {
   platformFee: Rupiah;
   /**
    * Biaya layanan QRIS dibebankan ke wali? (ADR-016: bisa dimatikan sampai Midtrans
-   * mengonfirmasi aturan BI; bila mati, biaya QRIS ditanggung klub.)
+   * mengonfirmasi aturan BI; bila mati, biaya QRIS ditanggung SportGather, ADR-033.)
    */
   qrisSurchargeEnabled: boolean;
 }
@@ -165,6 +165,8 @@ export interface CheckoutBreakdown {
   /** Biaya Midtrans sesungguhnya atas `gross`. */
   midtransFee: Rupiah;
   platformFee: Rupiah;
+  /** Biaya Midtrans yang ditanggung SportGather (QRIS tanpa biaya layanan, ADR-033). Tidak masuk ledger klub. */
+  midtransFeeBorneByPlatform: Rupiah;
   /** Per tagihan: diterima klub = total − bagian fee platform − bagian biaya Midtrans yang ditanggung klub. */
   perInvoice: {
     invoiceId: string;
@@ -179,7 +181,7 @@ export interface CheckoutBreakdown {
 /**
  * US-13: bagian klub = jumlah bayar − biaya Midtrans − fee platform, dan setiap rupiah bisa
  * ditelusuri ke tagihan asalnya. Biaya Midtrans ditanggung wali lewat biaya layanan, kecuali
- * QRIS saat biaya layanannya dimatikan (ditanggung klub).
+ * QRIS saat biaya layanannya dimatikan: ditanggung SportGather (ADR-033), klub tidak dipotong.
  */
 export function checkoutBreakdown(
   invoices: { id: string; total: Rupiah }[],
@@ -190,9 +192,11 @@ export function checkoutBreakdown(
   const fee = serviceFee(method, base, policy);
   const gross = base + fee;
   const midtransFee = gatewayFee(method, gross);
-  // Selisih biaya Midtrans di atas biaya layanan ditanggung klub (QRIS tanpa biaya layanan,
-  // atau pembulatan persen atas gross).
-  const borneByClub = Math.max(0, midtransFee - fee);
+  // Selisih biaya Midtrans di atas biaya layanan: QRIS tanpa biaya layanan → SportGather
+  // (ADR-033); selisih pembulatan persen atas gross (mis. e-wallet) → klub.
+  const shortfall = Math.max(0, midtransFee - fee);
+  const borneByPlatform = method === 'qris' && fee === 0 ? shortfall : 0;
+  const borneByClub = shortfall - borneByPlatform;
   const weights = invoices.map((i) => i.total);
   const platformParts = allocate(policy.platformFee, weights);
   const midtransParts = allocate(borneByClub, weights);
@@ -209,6 +213,7 @@ export function checkoutBreakdown(
     gross,
     midtransFee,
     platformFee: policy.platformFee,
+    midtransFeeBorneByPlatform: borneByPlatform,
     perInvoice,
     clubNet: perInvoice.reduce((a, p) => a + p.clubNet, 0),
   };

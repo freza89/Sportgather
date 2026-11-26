@@ -76,5 +76,5 @@ Status: ✅ terpenuhi · ⚠️ sebagian / perlu tindakan ops · ⏳ di luar kod
 1. ⏳ **Pentest eksternal**, tanpa temuan kritis/tinggi.
 2. ⏳ **Review legal UU PDP** (persetujuan wali, retensi, DPO).
 3. ⚠️ Signature webhook Midtrans sandbox belum cocok dengan key di `.env`. Cocokkan dengan _Settings › Access Keys_ (job rekonsiliasi 15 menit sudah jadi jaring pengaman).
-4. ⚠️ Konfirmasi Midtrans soal biaya layanan QRIS (ADR-016).
+4. ✅ Biaya QRIS: ditanggung SportGather (ADR-033).
 5. ⚠️ CSP masih memakai `'unsafe-inline'` untuk skrip (hidrasi Next tanpa nonce). Bisa diperketat dengan nonce lewat middleware setelah pilot.
