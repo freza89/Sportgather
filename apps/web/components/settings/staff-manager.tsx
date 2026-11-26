@@ -20,6 +20,7 @@ import {
   Select,
   type BadgeTone,
 } from '@sportgather/ui';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { api, fieldErrors } from '@/lib/api-client';
@@ -113,12 +114,13 @@ export function StaffManager({
       </div>
       {notice ? <Alert tone="success">{notice}</Alert> : null}
       <Card className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-left">
+        <table className="w-full min-w-[760px] text-left">
           <thead className="border-b border-line bg-canvas/60 type-caption-bold text-fg-secondary">
             <tr>
               <th className="px-4 py-3">Nama</th>
               <th className="px-4 py-3">Peran</th>
               <th className="px-4 py-3">Tim</th>
+              <th className="px-4 py-3">Lisensi</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">
                 <span className="sr-only">Aksi</span>
@@ -132,7 +134,12 @@ export function StaffManager({
                   <div className="flex items-center gap-3">
                     <Avatar name={s.fullName} size={32} />
                     <div>
-                      <p className="type-body-medium">{s.fullName}</p>
+                      <Link
+                        href={`/admin/${slug}/pengaturan/staf/${s.id}`}
+                        className="type-body-medium hover:text-brand hover:underline"
+                      >
+                        {s.fullName}
+                      </Link>
                       <p className="type-caption text-fg-muted">
                         {s.phone ? formatPhone(s.phone) : '—'}
                       </p>
@@ -146,6 +153,9 @@ export function StaffManager({
                 </td>
                 <td className="px-4 py-3 type-body text-fg-secondary">
                   {s.role === 'owner' || s.role === 'admin' ? 'Semua' : '—'}
+                </td>
+                <td className="px-4 py-3">
+                  <LicenseCell s={s} />
                 </td>
                 <td className="px-4 py-3">
                   {s.status === 'invited' ? (
@@ -242,6 +252,22 @@ export function StaffManager({
           </div>
         ) : null}
       </Dialog>
+    </div>
+  );
+}
+
+/** M7: ringkasan lisensi di daftar staf; masalah (kedaluwarsa/menunggu) didahulukan. */
+function LicenseCell({ s }: { s: StaffDto }) {
+  const l = s.licenses;
+  if (!l) return <span className="type-caption text-fg-muted">—</span>;
+  return (
+    <div className="flex flex-wrap gap-1">
+      {l.expired ? <Badge tone="danger">{l.expired} kedaluwarsa</Badge> : null}
+      {l.pending ? <Badge tone="warning">{l.pending} perlu verifikasi</Badge> : null}
+      {l.expiring ? <Badge tone="warning">{l.expiring} segera habis</Badge> : null}
+      {!l.expired && !l.pending && !l.expiring ? (
+        <span className="type-caption text-fg-secondary">{l.total} lisensi</span>
+      ) : null}
     </div>
   );
 }

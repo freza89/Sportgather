@@ -1,5 +1,6 @@
 import { formatPhone, type CoachTeamDto } from '@sportgather/shared';
 import { Avatar, Card, IconCalendar, IconChart, IconMessage, IconPin } from '@sportgather/ui';
+import Link from 'next/link';
 import { MobileShell } from '@/components/shell/mobile-shell';
 import { apiPage } from '@/lib/api-server';
 import { getClubSession } from '@/lib/club';
@@ -19,6 +20,20 @@ export default async function TimSaya({ params }: { params: Promise<{ org: strin
       userName={me.user.fullName}
     >
       <div className="flex flex-col gap-5">
+        <Link href={`/pelatih/${org}/profil`}>
+          <Card className="flex items-center gap-3 p-4 hover:border-brand">
+            <Avatar name={me.user.fullName} size={40} />
+            <div className="min-w-0 flex-1">
+              <p className="type-body-medium">Profil & lisensi saya</p>
+              <p className="type-caption text-fg-muted">
+                Lengkapi CV, pengalaman, dan unggah lisensi pelatih
+              </p>
+            </div>
+            <span aria-hidden className="type-h3 text-fg-muted">
+              ›
+            </span>
+          </Card>
+        </Link>
         {teams.length === 0 ? (
           <Card className="p-5 type-body text-fg-secondary">
             Anda belum ditugaskan ke tim. Hubungi admin klub.
