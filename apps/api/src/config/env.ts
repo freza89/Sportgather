@@ -3,6 +3,7 @@ import { z } from 'zod';
 const DEV_AUTH_SECRET = 'dev-only-secret-change-me-dev-only-secret';
 // 32 byte (base64) — HANYA untuk lokal/tes.
 const DEV_DOCUMENT_KEY = 'ZGV2LW9ubHktZG9jdW1lbnQta2V5LTMyLWJ5dGVzISE=';
+const DEV_S3_SECRET = 'sportgather-dev-secret';
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -26,6 +27,12 @@ const EnvSchema = z.object({
   REDIS_URL: z.string().default('redis://localhost:56379'),
   /** Batas kasar permintaan per IP per menit (e2e menaikkannya karena semua tes dari satu IP). */
   RATE_LIMIT_PER_MIN: z.coerce.number().int().min(10).default(300),
+  /**
+   * Alamat/CIDR proxy tepercaya di depan API, dipisah koma (mis. subnet privat server web).
+   * Kosong = abaikan X-Forwarded-For. Jangan "percaya semua": klien bisa memalsukan header
+   * itu untuk lolos dari rate limit per IP. Lihat docs/deploy.md.
+   */
+  TRUST_PROXY: z.string().trim().default(''),
   /** Server key Midtrans (sandbox/produksi). Default hanya untuk mock lokal. */
   MIDTRANS_SERVER_KEY: z.preprocess(
     (v) => (v === '' ? undefined : v),
@@ -56,7 +63,7 @@ const EnvSchema = z.object({
   S3_ENDPOINT: z.string().default('http://localhost:59000'),
   S3_REGION: z.string().default('ap-southeast-3'),
   S3_ACCESS_KEY: z.string().default('sportgather'),
-  S3_SECRET_KEY: z.string().default('sportgather-dev-secret'),
+  S3_SECRET_KEY: z.string().default(DEV_S3_SECRET),
   S3_BUCKET: z.string().default('sportgather-documents'),
   /** Kunci AES-256 (base64, 32 byte) untuk enkripsi dokumen anak sebelum disimpan. */
   DOCUMENT_ENCRYPTION_KEY: z
@@ -90,8 +97,17 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     ).filter((k) => env[k] === 'mock');
     if (mocks.length)
       throw new Error(`Provider mock tidak boleh dipakai di production: ${mocks.join(', ')}`);
-    if (env.AUTH_SECRET === DEV_AUTH_SECRET)
-      throw new Error('AUTH_SECRET wajib diatur di production');
+    const problems = [
+      env.AUTH_SECRET === DEV_AUTH_SECRET && 'AUTH_SECRET wajib diatur di production',
+      env.DOCUMENT_ENCRYPTION_KEY === DEV_DOCUMENT_KEY &&
+        'DOCUMENT_ENCRYPTION_KEY wajib diatur di production',
+      env.STORAGE_PROVIDER !== 's3' && 'STORAGE_PROVIDER harus s3 di production',
+      env.S3_SECRET_KEY === DEV_S3_SECRET && 'S3_SECRET_KEY wajib diatur di production',
+      !env.WEB_ORIGIN.startsWith('https://') && 'WEB_ORIGIN harus https:// di production',
+      !env.TRUST_PROXY &&
+        'TRUST_PROXY wajib diatur di production (CIDR server web; lihat docs/deploy.md)',
+    ].filter((p): p is string => Boolean(p));
+    if (problems.length) throw new Error(problems.join('\n'));
   }
   if (env.PUSH_PROVIDER === 'real' && (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY))
     throw new Error('PUSH_PROVIDER=real butuh VAPID_PUBLIC_KEY & VAPID_PRIVATE_KEY');
