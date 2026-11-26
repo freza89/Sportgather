@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  coachLicense,
   invitation,
   organization,
   person,
@@ -17,6 +18,7 @@ import {
   type Database,
 } from '@sportgather/db';
 import {
+  licenseDisplayStatus,
   assignableRoles,
   maskPhone,
   ROLE_LABEL,
@@ -66,7 +68,31 @@ export class StaffService {
           sql`array_position(array['owner','admin','coach','team_manager']::staff_role_kind[], ${staffRole.role})`,
           asc(person.fullName),
         );
-      return rows;
+      // M7: ringkasan lisensi per staf untuk tanda di daftar staf.
+      const lics = await tx
+        .select({
+          staffRoleId: coachLicense.staffRoleId,
+          status: coachLicense.status,
+          expiresOn: coachLicense.expiresOn,
+        })
+        .from(coachLicense);
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(
+        new Date(),
+      );
+      return rows.map((r) => {
+        const mine = lics.filter((l) => l.staffRoleId === r.id);
+        if (!mine.length) return { ...r, licenses: null };
+        const d = mine.map((l) => licenseDisplayStatus(l.status, l.expiresOn, today));
+        return {
+          ...r,
+          licenses: {
+            total: mine.length,
+            pending: d.filter((x) => x === 'pending').length,
+            expired: d.filter((x) => x === 'expired').length,
+            expiring: d.filter((x) => x === 'expiring').length,
+          },
+        };
+      });
     });
   }
 
