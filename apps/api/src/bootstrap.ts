@@ -31,7 +31,7 @@ export async function createApp(env: Env): Promise<NestFastifyApplication> {
     timeWindow: '1 minute',
   });
   app.enableCors({ origin: env.WEB_ORIGIN, credentials: true });
-  app.setGlobalPrefix('v1', { exclude: ['health'] });
+  app.setGlobalPrefix('v1', { exclude: ['health', 'health/ready'] });
   app.enableShutdownHooks();
 
   const openapi = new DocumentBuilder()

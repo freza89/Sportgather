@@ -19,6 +19,12 @@ describe('GET /health', () => {
     expect(res.json()).toMatchObject({ status: 'ok' });
   });
 
+  it('readiness memeriksa database', async () => {
+    const res = await h.app.inject({ method: 'GET', url: '/health/ready' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ status: 'ok' });
+  });
+
   it('menyediakan dokumen OpenAPI', async () => {
     const res = await h.app.inject({ method: 'GET', url: '/docs-json' });
     expect(res.statusCode).toBe(200);
