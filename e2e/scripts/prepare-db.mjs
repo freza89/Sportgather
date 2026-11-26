@@ -1,6 +1,7 @@
 // Menyiapkan database e2e terpisah (sportgather_e2e) lalu menjalankan migrasi.
 import postgres from 'postgres';
 import { runMigrations } from '@sportgather/db/migrate';
+import { appPasswordForTests } from '@sportgather/db/testing';
 
 const admin =
   process.env.DATABASE_ADMIN_URL ??
@@ -12,5 +13,6 @@ if (!exists) await root.unsafe(`create database ${name}`);
 await root.end();
 const url = new URL(admin);
 url.pathname = `/${name}`;
-await runMigrations(url.toString(), { appPassword: 'sg_app_e2e' });
+// Password sama dengan dev agar API dev lokal tidak ikut putus (role sg_app berlaku global).
+await runMigrations(url.toString(), { appPassword: appPasswordForTests() });
 console.log('Database e2e siap.');
